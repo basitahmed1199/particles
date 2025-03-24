@@ -257,7 +257,7 @@ createUnderwaterParticles() {
     this.scene.add(this.framesGroup);
     
     // Number of frames to distribute along the curve - increased for more even distribution
-    this.totalFrames = 18; // Increased to reduce spacing between frames
+    this.totalFrames = 10; // Increased to reduce spacing between frames
     this.videoFrames = [];
     this.frameColors = [
       0x4a90e2, 0xe24a90, 0x4ae290, 
@@ -291,8 +291,8 @@ createUnderwaterParticles() {
       
       // Create rounded panel with beveled edges
       const shape = new THREE.Shape();
-      const width = (closestPoint.frameWidth || 1.5) * 1; // Multiplied by 1.5 for 50% larger
-const height = (closestPoint.frameHeight || 1) * 1; // Multiplied by 1.5 for 50% larger
+      const width = (closestPoint.frameWidth || 1.5) * 2.5; // Multiplied by 1.5 for 50% larger
+const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 50% larger
       const radius = 0.15; // corner radius
 
       shape.moveTo(0, radius);
