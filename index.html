@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive 3D Spine Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #050510;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .ui-overlay {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 10px 20px;
+            border: 1px solid rgba(100, 100, 255, 0.2);
+            box-shadow: 0 0 20px rgba(100, 100, 255, 0.1);
+            z-index: 6;
+        }
+        
+        .nav-item {
+            padding: 10px 20px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 1px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:before {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: 5px;
+            left: 20px;
+            background: linear-gradient(90deg, rgba(100, 100, 255, 0), rgba(100, 100, 255, 1));
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover:before {
+            width: calc(100% - 40px);
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 40px;
+            z-index: 2;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        
+        .sidebar-item:hover {
+            opacity: 1;
+        }
+        
+        .sidebar-item .arrow {
+            font-size: 18px;
+            margin-right: 10px;
+            color: #9d86ff;
+            cursor: pointer;
+        }
+        
+        .sidebar-item .label {
+            font-size: 14px;
+            letter-spacing: 1px;
+            color: #9d86ff;
+            cursor: pointer;
+        }
+        
+        .sidebar-title{
+            padding-bottom: 20px;
+        }
+
+        .content {
+            padding-top: 100vh;
+        }
+        
+        .section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 20%;
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #4f9cff, #00ffaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        
+        .section-text {
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+            transition-delay: 0.2s;
+        }
+        
+        .section.visible .section-title,
+        .section.visible .section-text {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #050510;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease;
+        }
+        
+        .loading-bar-container {
+            width: 300px;
+            height: 2px;
+            background: rgba(100, 100, 255, 0.1);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4f9cff, #00ffaa);
+            transition: width 0.3s ease;
+        }
+        
+        .loading-text {
+            color: #fff;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+        
+        .ask-container {
+            position: fixed;
+            left: 40px;
+            bottom: 40px;
+            z-index: 2;
+        }
+        
+        .ask-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 100, 255, 0.2);
+            border-radius: 50px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(100, 100, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .ask-button:hover {
+            border-color: rgba(100, 100, 255, 0.5);
+            box-shadow: 0 0 30px rgba(100, 100, 255, 0.2);
+        }
+    </style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="loading-bar-container">
+            <div class="loading-progress"></div>
+        </div>
+        <div class="loading-text">Loading Experience...</div>
+    </div>
+    
+    <!-- 3D Canvas Container -->
+    <div id="canvas-container"></div>
+    
+    <!-- UI Overlay -->
+    <div class="ui-overlay">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <a href="#work" class="nav-item">WORK</a>
+            <a href="#contact" class="nav-item">CONTACT</a>
+        </nav>
+        
+        <!-- Sidebar Menu -->
+        <div class="sidebar">
+            <div class="sidebar-title">WHAT ARE YOU LOOKING FOR?</div>
+            <div class="sidebar-item">
+                <span class="arrow">-></span>
+                <span class="label">WEBSITES</span>
+            </div>
+            <div class="sidebar-item">
+                <span class="arrow">-></span>
+                <span class="label">INSTALLATIONS</span>
+            </div>
+            <div class="sidebar-item">
+                <span class="arrow">-></span>
+                <span class="label">XR / VR / AI</span>
+            </div>
+            <div class="sidebar-item">
+                <span class="arrow">-></span>
+                <span class="label">MULTIPLAYER</span>
+            </div>
+            <div class="sidebar-item">
+                <span class="arrow">-></span>
+                <span class="label">GAMES</span>
+            </div>
+        </div>
+        
+        <!-- Ask Button -->
+        <!-- <div class="ask-container">
+            <a href="#" class="ask-button">ASK ME ANYTHING...</a>
+        </div> -->
+        
+        <!-- Content Sections -->
+        <div class="content">
+            <section class="section" id="intro">
+               
+            </section>
+            
+            <section class="section" id="features">
+               
+            </section>
+            
+            <section class="section" id="technology">
+               
+            </section>
+        </div>
+    </div>
+    
+    
+    <script>
+        // Simple section visibility on scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.3 });
+            
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            // Simulate loading for demo
+            const loadingScreen = document.querySelector('.loading-screen');
+            const progress = document.querySelector('.loading-progress');
+            
+            let width = 0;
+            const interval = setInterval(() => {
+                width += Math.random() * 10;
+                if (width > 100) width = 100;
+                progress.style.width = width + '%';
+                
+                if (width === 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingScreen.style.opacity = 0;
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                        }, 1000);
+                    }, 500);
+                }
+            }, 200);
+        });
+    </script>
+   
+    <!-- Import your bundled JS file here -->
+    <script type="module" src="index.js"></script>
+</body>
+</html>
