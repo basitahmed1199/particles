@@ -146,10 +146,10 @@ class SpineExperience {
         
         const textureLoader = new THREE.TextureLoader();
         // Load different texture maps
-        const baseTexture = textureLoader.load('textures/cracked_ice_basecolor.png');
-        const normalTexture = textureLoader.load('textures/alien_cracked_2_normal.png');
-        const roughnessTexture = textureLoader.load('textures/matcap-test.jpg');
-        const emissiveTexture = textureLoader.load('textures/cliffs_MRO.png');
+        const baseTexture = textureLoader.load('https://res.cloudinary.com/df3z4ndtu/image/upload/v1742858962/cracked_ice_basecolor_ms2i91.png');
+        const normalTexture = textureLoader.load('https://res.cloudinary.com/df3z4ndtu/image/upload/v1742858963/alien_cracked_2_normal_ks19pf.png');
+        const roughnessTexture = textureLoader.load('https://res.cloudinary.com/df3z4ndtu/image/upload/v1742858962/matcap-test_fp65gy.jpg');
+        const emissiveTexture = textureLoader.load('https://res.cloudinary.com/df3z4ndtu/image/upload/v1742858963/cliffs_MRO_o4ieia.png');
 
         const spineMaterial = new THREE.MeshStandardMaterial({
           map: baseTexture,           // Main texture
