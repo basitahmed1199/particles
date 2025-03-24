@@ -140,7 +140,7 @@ class SpineExperience {
     
     // Load the spine model - replace with your model path
     loader.load(
-      'models/spine.glb',
+      'https://res.cloudinary.com/df3z4ndtu/image/upload/v1742829114/spine_w8mnar.glb',
       (gltf) => {
         this.spineModel = gltf.scene;
         
