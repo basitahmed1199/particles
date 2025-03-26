@@ -447,8 +447,8 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
             this.updateFramesOnScroll(this.scrollProgress);
             
             // Camera movement - subtle tilt based on scroll
-            this.camera.position.y = (this.scrollProgress - 0.5) * 1.5;
-            this.camera.rotation.x = (this.scrollProgress - 0.5) * 0.15;
+            // this.camera.position.y = (this.scrollProgress - 0.5) * 1.5;
+            // this.camera.rotation.x = (this.scrollProgress - 0.5) * 0.15;
           }
         }
       });
