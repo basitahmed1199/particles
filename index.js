@@ -409,16 +409,20 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
     }
 
     this.videoFrames.forEach(frame => {
-      // Smooth scaling animation
+      // Smooth scaling transition
       const currentScale = frame.scale.x;
-      const targetScale = frame.userData.isHovered ? 1.1 : 1.0;
+      const targetScale = frame.userData.targetScale || 1.0;
       
-      // Lerp (linear interpolation) for smooth transition
-      const newScale = currentScale + (targetScale - currentScale) * 0.1;
+      // Smooth interpolation with a slower transition
+      const newScale = currentScale + (targetScale - currentScale) * 0.2;
+      
+      // Apply the new scale
       frame.scale.set(newScale, newScale, newScale);
       
-      // Reset hover state each frame (will be set again on next mousemove)
-      frame.userData.isHovered = false;
+      // Optional: Add a small threshold to prevent continuous tiny updates
+      if (Math.abs(targetScale - newScale) < 0.001) {
+        frame.scale.set(targetScale, targetScale, targetScale);
+      }
     });
   }
   
@@ -469,8 +473,8 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
         this.updateFramesOnScroll(this.scrollProgress);
         
         // Camera movement - subtle tilt based on scroll
-        this.camera.position.y = (this.scrollProgress - 0.5) * 1.5;
-        this.camera.rotation.x = (this.scrollProgress - 0.5) * 0.15;
+        // this.camera.position.y = (this.scrollProgress - 0.5) * 1.5;
+        // this.camera.rotation.x = (this.scrollProgress - 0.5) * 0.15;
       });
     }
   }
@@ -538,6 +542,9 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
     
+    // Track which frame is currently hovered
+    this.hoveredFrame = null;
+    
     // Mouse move event for hover detection
     window.addEventListener('mousemove', (event) => {
       // Update mouse position for raycaster
@@ -550,45 +557,26 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
       // Check for intersections with frames
       const intersects = this.raycaster.intersectObjects(this.videoFrames);
       
-      // Reset all frames
-      // In your setupHoverEffects function:
-
-// Add this at the beginning after you declare videoFrames
-this.videoFrames.forEach(frame => {
-  // Set a custom property for smooth transitions
-  frame.userData.targetScale = 1.0;
-  frame.userData.isHovered = false;
-});
-
-// Then replace your hover detection logic:
-if (intersects.length > 0) {
-  const hoveredFrame = intersects[0].object;
-  hoveredFrame.userData.targetScale = 1.1; // Target scale for animation
-  hoveredFrame.userData.isHovered = true;
-  hoveredFrame.material.emissiveIntensity = 0.3;
-  document.body.style.cursor = 'pointer';
-} else {
-  this.videoFrames.forEach(frame => {
-    if (!frame.userData.isHovered) {
-      frame.userData.targetScale = 1.0;
-    }
-  });
-  document.body.style.cursor = 'default';
-}
-
-// Then in your updateScene method, add this to smoothly animate the scale changes:
-this.videoFrames.forEach(frame => {
-  // Smooth scaling animation
-  const currentScale = frame.scale.x;
-  const targetScale = frame.userData.isHovered ? 1.1 : 1.0;
-  
-  // Lerp (linear interpolation) for smooth transition
-  const newScale = currentScale + (targetScale - currentScale) * 0.1;
-  frame.scale.set(newScale, newScale, newScale);
-  
-  // Reset hover state each frame (will be set again on next mousemove)
-  frame.userData.isHovered = false;
-});
+      // Reset previous hover state
+      this.videoFrames.forEach(frame => {
+        // If this frame was previously hovered but isn't now
+        if (frame.userData.isHovered && (!intersects.length || intersects[0].object !== frame)) {
+          frame.userData.isHovered = false;
+          frame.userData.targetScale = 1.0;
+          frame.material.emissiveIntensity = 0.15;
+        }
+      });
+      
+      // Handle new hover
+      if (intersects.length > 0) {
+        const hoveredFrame = intersects[0].object;
+        hoveredFrame.userData.isHovered = true;
+        hoveredFrame.userData.targetScale = 1.1;
+        hoveredFrame.material.emissiveIntensity = 0.3;
+        document.body.style.cursor = 'pointer';
+      } else {
+        document.body.style.cursor = 'default';
+      }
     });
     
     // Click event for frames
@@ -603,11 +591,10 @@ this.videoFrames.forEach(frame => {
         const clickedFrame = intersects[0].object;
         // Handle frame click - could open modal, play video, etc.
         console.log("Clicked frame:", clickedFrame.userData.index);
-        
-        // No animation on click
       }
     });
   }
+
   
   setupEvents() {
     // Resize handler
