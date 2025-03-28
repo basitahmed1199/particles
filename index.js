@@ -3,6 +3,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { FontLoader, TextGeometry } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
 
 class SpineExperience {
   constructor() {
@@ -11,6 +12,27 @@ class SpineExperience {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     
+     // New properties for rotation control
+     this.frameRotationMultiplier = 0.1; // Default multiplier
+     this.spineRotationMultiplier = 1; // Default multiplier
+
+    this.font = null; // Add font loader property
+    this.frameTexts = []; // Array to store text meshes
+
+     // Define sample texts in the constructor
+     this.frameSampleTexts = [
+      "Explore", 
+      "Connect", 
+      "Discover", 
+      "Transform", 
+      "Innovate", 
+      "Journey", 
+      "Evolve", 
+      "Imagine", 
+      "Create", 
+      "Inspire"
+    ];
+
     // Tracking cursor position
     this.cursor = {
       x: 0,
@@ -93,6 +115,7 @@ class SpineExperience {
     // Ambient light
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     this.scene.add(ambientLight);
+    
     
     // Main directional light
     const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
@@ -250,6 +273,77 @@ createUnderwaterParticles() {
     );
     this.framePath = new THREE.CatmullRomCurve3(points, true);
   }
+
+  loadFont() {
+    return new Promise((resolve, reject) => {
+      const loader = new FontLoader();
+      loader.load(
+        'https://threejs.org/examples/fonts/helvetiker_regular.typeface.json',
+        (font) => {
+          console.log('Font loaded successfully');
+          this.font = font;
+          resolve(font);
+        },
+        (progress) => {
+          console.log('Font loading progress:', progress);
+        },
+        (error) => {
+          console.error('Error loading font:', error);
+          reject(error);
+        }
+      );
+    });
+  }
+
+  createFrameText(text, frame, width, height) {
+    if (!this.font) return null;
+  
+    const textGeometry = new TextGeometry(text, {
+      font: this.font,
+      size: 0.4,  // Smaller text size
+      height: 0.05,
+      curveSegments: 4,
+      bevelEnabled: false
+    });
+  
+    textGeometry.computeBoundingBox();
+    textGeometry.center();
+  
+    const textMaterial = new THREE.MeshBasicMaterial({ 
+      color: 0xffffff,
+      transparent: false,
+      opacity: 0.7
+    });
+  
+    const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+  
+    // Create a billboard effect - always face the camera
+    const billboardMatrix = new THREE.Matrix4();
+    billboardMatrix.makeRotationFromQuaternion(
+      new THREE.Quaternion().setFromRotationMatrix(
+        new THREE.Matrix4().extractRotation(this.camera.matrixWorld)
+      )
+    );
+  
+    // Position text slightly in front of the frame
+    textMesh.position.copy(frame.position);
+    textMesh.position.z += 0.1;
+  
+    // Apply billboard rotation
+    textMesh.quaternion.setFromRotationMatrix(billboardMatrix);
+  
+    // Reset scale to match frame
+    textMesh.scale.set(1, 1, 1);
+  
+    // Store additional userData for animation
+    textMesh.userData = {
+      ...frame.userData,
+      initialOpacity: 0.7,
+      fadeSpeed: 0.03 + Math.random() * 0.02  // Slight variation in fade speed
+    };
+  
+    return textMesh;
+  }
   
   createVideoFrames() {
     // Create video frames that will move along the curve
@@ -267,6 +361,37 @@ createUnderwaterParticles() {
       0x4a90e2, 0xe24a90, 0x4ae290, 
       0xe2e24a, 0x9e4ae2, 0xe29a4a
     ];
+
+     
+
+    // Modify text addition logic
+this.loadFont().then(() => {
+  console.log('Font loaded, creating texts. Total frames:', this.videoFrames.length);
+  
+  this.videoFrames.forEach((frame, index) => {
+    try {
+      const text = this.createFrameText(
+        this.frameSampleTexts[index % this.frameSampleTexts.length] || `Frame ${index + 1}`, 
+        frame, 
+        frame.geometry.parameters?.width || 1, 
+        frame.geometry.parameters?.height || 1
+      );
+
+      if (text) {
+        console.log('Text created:', text);
+        this.scene.add(text);  // Add directly to scene instead of framesGroup
+        this.frameTexts.push(text);
+      } else {
+        console.warn('Failed to create text for frame', index);
+      }
+    } catch (error) {
+      console.error('Error creating frame text:', error);
+    }
+  });
+}).catch(error => {
+  console.error('Font loading completely failed:', error);
+});
+  
     
     // Create the video frames
     for (let i = 0; i < this.totalFrames; i++) {
@@ -357,6 +482,36 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
       this.framesGroup.add(frame);
       this.videoFrames.push(frame);
     }
+
+    
+     // Modify the font loading section
+     this.loadFont().then(() => {
+      // Ensure videoFrames are created before adding texts
+      if (this.videoFrames.length > 0) {
+        this.videoFrames.forEach((frame, index) => {
+          try {
+            // Safe text selection with fallback
+            const text = this.createFrameText(
+              this.frameSampleTexts[index % this.frameSampleTexts.length] || `Frame ${index + 1}`, 
+              frame, 
+              frame.geometry.parameters.width || 1, 
+              frame.geometry.parameters.height || 1
+            );
+
+            if (text) {
+              this.framesGroup.add(text);
+              this.frameTexts.push(text);
+            }
+          } catch (error) {
+            console.error('Error creating frame text:', error);
+          }
+        });
+      } else {
+        console.warn('No video frames created before adding texts');
+      }
+    }).catch(error => {
+      console.error('Font loading failed:', error);
+    });
   }
   
   updateScene() {
@@ -424,6 +579,42 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
         frame.scale.set(targetScale, targetScale, targetScale);
       }
     });
+
+      // Animate frame texts
+      this.frameTexts.forEach((textMesh) => {
+        // Match text position and rotation with its corresponding frame
+        const correspondingFrame = this.videoFrames.find(
+          frame => frame.userData.index === textMesh.userData.index
+        );
+  
+        if (correspondingFrame) {
+          // Update position and rotation
+          textMesh.position.copy(correspondingFrame.position);
+          textMesh.position.z += 0.1;  // Slight offset
+          textMesh.rotation.copy(correspondingFrame.rotation);
+  
+          // Fade effect
+          const material = textMesh.material;
+          material.opacity -= textMesh.userData.fadeSpeed;
+  
+          // Reset opacity when it becomes too low
+          if (material.opacity <= 0) {
+            material.opacity = textMesh.userData.initialOpacity;
+          }
+  
+          // Handle visibility based on frame position
+          const isBehindSpine = textMesh.position.z > 3;
+          if (isBehindSpine) {
+            textMesh.renderOrder = -1;
+            material.opacity *= 0.5; // More transparent when behind
+          } else {
+            textMesh.renderOrder = 1;
+          }
+        }
+      });
+      
+      
+    
   }
   
   setupGSAP() {
@@ -478,6 +669,13 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
       });
     }
   }
+
+  // Method to dynamically adjust rotation
+  setRotationMultipliers(frameMultiplier = 1, spineMultiplier = 1) {
+    this.frameRotationMultiplier = frameMultiplier;
+    this.spineRotationMultiplier = spineMultiplier;
+  }
+
   
   // Revised frame movement with constant speed and fixed angle
   updateFramesOnScroll(progress) {
@@ -520,11 +718,14 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
       // Update frame position
       frame.position.copy(pointOnPath);
       
-      // Rest of your code for facing direction, etc.
-      const lookAtPoint = new THREE.Vector3(0, frame.position.y, 3);
-      frame.lookAt(lookAtPoint);
-      frame.rotateY(frame.userData.fixedAngle);
-      
+     // Modify rotation application
+     const lookAtPoint = new THREE.Vector3(0, frame.position.y, 3);
+     frame.lookAt(lookAtPoint);
+     
+     // Apply custom multiplier to rotation
+     frame.rotateY(frame.userData.fixedAngle * this.frameRotationMultiplier);
+     
+
       // Visibility logic
       const isBehindSpine = frame.position.z > 3;
       if (isBehindSpine) {
