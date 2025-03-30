@@ -12,6 +12,7 @@ class SpineExperience {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     
+    
      // New properties for rotation control
      this.frameRotationMultiplier = 0.1; // Default multiplier
      this.spineRotationMultiplier = 1; // Default multiplier
@@ -19,8 +20,8 @@ class SpineExperience {
     this.font = null; // Add font loader property
     this.frameTexts = []; // Array to store text meshes
 
-     // Define sample texts in the constructor
-     this.frameSampleTexts = [
+    // Define sample texts in the constructor
+    this.frameSampleTexts = [
       "Explore", 
       "Connect", 
       "Discover", 
@@ -32,6 +33,12 @@ class SpineExperience {
       "Create", 
       "Inspire"
     ];
+
+    // NEW: Center position tracking
+    this.centerPosition = new THREE.Vector3(0, 0, 3); // Center of the scene
+    this.centerThreshold = 1.5; // Distance threshold to be considered "at center"
+    this.activeFrameIndex = -1; // Current frame at center (-1 means no frame is at center)
+    this.onFrameAtCenter = null; // Callback function for when a frame reaches center
 
     // Tracking cursor position
     this.cursor = {
@@ -53,6 +60,85 @@ class SpineExperience {
     this.init();
     this.setupEvents();
     this.setupGSAP();
+  }
+  
+  // NEW: Method to set callback for when a frame reaches center
+  setFrameAtCenterCallback(callback) {
+    if (typeof callback === 'function') {
+      this.onFrameAtCenter = callback;
+    }
+  }
+
+  createCenterTextElements() {
+    // Create HTML elements for morphing text
+    const container = document.createElement('div');
+    container.id = 'center-text-container';
+    container.style.position = 'fixed';
+    container.style.top = '50%';
+    container.style.left = '50%';
+    container.style.transform = 'translate(-50%, -50%)';
+    container.style.zIndex = '1000';
+    container.style.pointerEvents = 'none';
+    
+    this.centerTextElement1 = document.createElement('span');
+    this.centerTextElement1.id = 'center-text1';
+    this.centerTextElement1.style.position = 'absolute';
+    this.centerTextElement1.style.width = '100%';
+    this.centerTextElement1.style.display = 'inline-block';
+    this.centerTextElement1.style.fontFamily = "'Raleway', sans-serif";
+    this.centerTextElement1.style.fontSize = '80pt';
+    this.centerTextElement1.style.textAlign = 'center';
+    this.centerTextElement1.style.userSelect = 'none';
+    this.centerTextElement1.style.filter = 'url(#threshold) blur(0.6px)';
+    this.centerTextElement1.style.opacity = '0%';
+    
+    this.centerTextElement2 = document.createElement('span');
+    this.centerTextElement2.id = 'center-text2';
+    this.centerTextElement2.style.position = 'absolute';
+    this.centerTextElement2.style.width = '100%';
+    this.centerTextElement2.style.display = 'inline-block';
+    this.centerTextElement2.style.fontFamily = "'Raleway', sans-serif";
+    this.centerTextElement2.style.fontSize = '80pt';
+    this.centerTextElement2.style.textAlign = 'center';
+    this.centerTextElement2.style.userSelect = 'none';
+    this.centerTextElement2.style.filter = 'url(#threshold) blur(0.6px)';
+    this.centerTextElement2.style.opacity = '100%';
+    
+    container.appendChild(this.centerTextElement1);
+    container.appendChild(this.centerTextElement2);
+    document.body.appendChild(container);
+    
+    // Add SVG filter if not already present
+    if (!document.getElementById('filters')) {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.id = 'filters';
+      svg.style.position = 'absolute';
+      svg.style.width = '0';
+      svg.style.height = '0';
+      
+      const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+      const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+      filter.id = 'threshold';
+      
+      const feColorMatrix = document.createElementNS('http://www.w3.org/2000/svg', 'feColorMatrix');
+      feColorMatrix.setAttribute('in', 'SourceGraphic');
+      feColorMatrix.setAttribute('type', 'matrix');
+      feColorMatrix.setAttribute('values', '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 255 -140');
+      
+      filter.appendChild(feColorMatrix);
+      defs.appendChild(filter);
+      svg.appendChild(defs);
+      document.body.appendChild(svg);
+    }
+  }
+
+  updateMorphing(dt) {
+    if (this.isMorphing) {
+      this.doMorph();
+    } else if (this.cooldown > 0) {
+      this.cooldown -= dt;
+      this.doCooldown();
+    }
   }
   
   init() {
@@ -206,32 +292,31 @@ class SpineExperience {
     );
   }
 
-  // Add this method to your class
-createUnderwaterParticles() {
-  const particleCount = 200;
-  const particleGeometry = new THREE.BufferGeometry();
-  const particlePositions = new Float32Array(particleCount * 3);
-  
-  for (let i = 0; i < particleCount; i++) {
-    // Random positions in a wide area around the scene
-    particlePositions[i * 3] = (Math.random() - 0.5) * 20;
-    particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 20;
-    particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+  createUnderwaterParticles() {
+    const particleCount = 200;
+    const particleGeometry = new THREE.BufferGeometry();
+    const particlePositions = new Float32Array(particleCount * 3);
+    
+    for (let i = 0; i < particleCount; i++) {
+      // Random positions in a wide area around the scene
+      particlePositions[i * 3] = (Math.random() - 0.5) * 20;
+      particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+      particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+    }
+    
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+    
+    const particleMaterial = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 0.05,
+      transparent: true,
+      opacity: 0.4,
+      blending: THREE.AdditiveBlending
+    });
+    
+    this.particles = new THREE.Points(particleGeometry, particleMaterial);
+    this.scene.add(this.particles);
   }
-  
-  particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-  
-  const particleMaterial = new THREE.PointsMaterial({
-    color: 0xffffff,
-    size: 0.05,
-    transparent: true,
-    opacity: 0.4,
-    blending: THREE.AdditiveBlending
-  });
-  
-  this.particles = new THREE.Points(particleGeometry, particleMaterial);
-  this.scene.add(this.particles);
-}
   
   // Modified to create a circular path that wraps around the spine model
   createCircularPath() {
@@ -245,7 +330,7 @@ createUnderwaterParticles() {
       const angle = t * Math.PI * 4; // 2 full rotations
       
       // MODIFY: Reduce radius to bring frames closer to spine
-      const radius = 2.5 + Math.sin(t * Math.PI * 2) * 0.3; // Reduced from 3.2 to 2.5 and reduced variation
+      const radius = 2.8 + Math.sin(t * Math.PI * 2) * 0.3; // Reduced from 3.2 to 2.5 and reduced variation
       const verticalPosition = -5 + t * 10; // Start below, rise up above
       
       // Calculate position with nice distribution around spine
@@ -362,36 +447,33 @@ createUnderwaterParticles() {
       0xe2e24a, 0x9e4ae2, 0xe29a4a
     ];
 
-     
-
     // Modify text addition logic
-this.loadFont().then(() => {
-  console.log('Font loaded, creating texts. Total frames:', this.videoFrames.length);
-  
-  this.videoFrames.forEach((frame, index) => {
-    try {
-      const text = this.createFrameText(
-        this.frameSampleTexts[index % this.frameSampleTexts.length] || `Frame ${index + 1}`, 
-        frame, 
-        frame.geometry.parameters?.width || 1, 
-        frame.geometry.parameters?.height || 1
-      );
+    this.loadFont().then(() => {
+      console.log('Font loaded, creating texts. Total frames:', this.videoFrames.length);
+      
+      this.videoFrames.forEach((frame, index) => {
+        try {
+          const text = this.createFrameText(
+            this.frameSampleTexts[index % this.frameSampleTexts.length] || `Frame ${index + 1}`, 
+            frame, 
+            frame.geometry.parameters?.width || 1, 
+            frame.geometry.parameters?.height || 1
+          );
 
-      if (text) {
-        console.log('Text created:', text);
-        this.scene.add(text);  // Add directly to scene instead of framesGroup
-        this.frameTexts.push(text);
-      } else {
-        console.warn('Failed to create text for frame', index);
-      }
-    } catch (error) {
-      console.error('Error creating frame text:', error);
-    }
-  });
-}).catch(error => {
-  console.error('Font loading completely failed:', error);
-});
-  
+          if (text) {
+            console.log('Text created:', text);
+            this.scene.add(text);  // Add directly to scene instead of framesGroup
+            this.frameTexts.push(text);
+          } else {
+            console.warn('Failed to create text for frame', index);
+          }
+        } catch (error) {
+          console.error('Error creating frame text:', error);
+        }
+      });
+    }).catch(error => {
+      console.error('Font loading completely failed:', error);
+    });
     
     // Create the video frames
     for (let i = 0; i < this.totalFrames; i++) {
@@ -417,7 +499,7 @@ this.loadFont().then(() => {
       // Create rounded panel with beveled edges
       const shape = new THREE.Shape();
       const width = (closestPoint.frameWidth || 1.5) * 2.5; // Multiplied by 1.5 for 50% larger
-const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 50% larger
+      const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 50% larger
       const radius = 0.15; // corner radius
 
       shape.moveTo(0, radius);
@@ -437,8 +519,7 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
         bevelThickness: 0.02, // Reduced from 0.05
         bevelSize: 0.02, // Reduced from 0.05
         bevelSegments: 2 // Reduced from 3
-    };
-
+      };
 
       const frameGeometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
       // Center the geometry
@@ -455,7 +536,7 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
         // Add a subtle blur effect with displacementMap
         displacementScale: 0.05,
         displacementBias: 0.05
-    });
+      });
       const frame = new THREE.Mesh(frameGeometry, frameMaterial);
       
       // Position at point on curve
@@ -476,16 +557,17 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
         pathPosition: t,
         initialPosition: point.clone(),
         depthPosition: closestPoint.depthPosition,
-        fixedAngle: skewAngle // Store the fixed angle
+        fixedAngle: skewAngle, // Store the fixed angle
+        isAtCenter: false, // NEW: Track if frame is at center
+        text: this.frameSampleTexts[i % this.frameSampleTexts.length] // NEW: Store the text
       };
       
       this.framesGroup.add(frame);
       this.videoFrames.push(frame);
     }
 
-    
-     // Modify the font loading section
-     this.loadFont().then(() => {
+    // Modify the font loading section
+    this.loadFont().then(() => {
       // Ensure videoFrames are created before adding texts
       if (this.videoFrames.length > 0) {
         this.videoFrames.forEach((frame, index) => {
@@ -580,41 +662,38 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
       }
     });
 
-      // Animate frame texts
-      this.frameTexts.forEach((textMesh) => {
-        // Match text position and rotation with its corresponding frame
-        const correspondingFrame = this.videoFrames.find(
-          frame => frame.userData.index === textMesh.userData.index
-        );
-  
-        if (correspondingFrame) {
-          // Update position and rotation
-          textMesh.position.copy(correspondingFrame.position);
-          textMesh.position.z += 0.1;  // Slight offset
-          textMesh.rotation.copy(correspondingFrame.rotation);
-  
-          // Fade effect
-          const material = textMesh.material;
-          material.opacity -= textMesh.userData.fadeSpeed;
-  
-          // Reset opacity when it becomes too low
-          if (material.opacity <= 0) {
-            material.opacity = textMesh.userData.initialOpacity;
-          }
-  
-          // Handle visibility based on frame position
-          const isBehindSpine = textMesh.position.z > 3;
-          if (isBehindSpine) {
-            textMesh.renderOrder = -1;
-            material.opacity *= 0.5; // More transparent when behind
-          } else {
-            textMesh.renderOrder = 1;
-          }
+    // Animate frame texts
+    this.frameTexts.forEach((textMesh) => {
+      // Match text position and rotation with its corresponding frame
+      const correspondingFrame = this.videoFrames.find(
+        frame => frame.userData.index === textMesh.userData.index
+      );
+
+      if (correspondingFrame) {
+        // Update position and rotation
+        textMesh.position.copy(correspondingFrame.position);
+        textMesh.position.z += 0.1;  // Slight offset
+        textMesh.rotation.copy(correspondingFrame.rotation);
+
+        // Fade effect
+        const material = textMesh.material;
+        material.opacity -= textMesh.userData.fadeSpeed;
+
+        // Reset opacity when it becomes too low
+        if (material.opacity <= 0) {
+          material.opacity = textMesh.userData.initialOpacity;
         }
-      });
-      
-      
-    
+
+        // Handle visibility based on frame position
+        const isBehindSpine = textMesh.position.z > 3;
+        if (isBehindSpine) {
+          textMesh.renderOrder = -1;
+          material.opacity *= 0.5; // More transparent when behind
+        } else {
+          textMesh.renderOrder = 1;
+        }
+      }
+    });
   }
   
   setupGSAP() {
@@ -640,10 +719,6 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
             
             // Update frames position along path
             this.updateFramesOnScroll(this.scrollProgress);
-            
-            // Camera movement - subtle tilt based on scroll
-            // this.camera.position.y = (this.scrollProgress - 0.5) * 1.5;
-            // this.camera.rotation.x = (this.scrollProgress - 0.5) * 0.15;
           }
         }
       });
@@ -662,10 +737,6 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
         
         // Update frames position along path
         this.updateFramesOnScroll(this.scrollProgress);
-        
-        // Camera movement - subtle tilt based on scroll
-        // this.camera.position.y = (this.scrollProgress - 0.5) * 1.5;
-        // this.camera.rotation.x = (this.scrollProgress - 0.5) * 0.15;
       });
     }
   }
@@ -676,9 +747,17 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
     this.spineRotationMultiplier = spineMultiplier;
   }
 
-  
-  // Revised frame movement with constant speed and fixed angle
+  // Modified to check for center position
   updateFramesOnScroll(progress) {
+    // Reset all frames' center status
+    this.videoFrames.forEach(frame => {
+      frame.userData.isAtCenter = false;
+    });
+    
+    // Track the frame closest to center
+    let closestFrameToCenter = null;
+    let minDistanceToCenter = Infinity;
+    
     this.videoFrames.forEach((frame, index) => {
       // Base offset for frame spacing
       const baseOffset = index / this.totalFrames;
@@ -718,150 +797,314 @@ const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 5
       // Update frame position
       frame.position.copy(pointOnPath);
       
-     // Modify rotation application
-     const lookAtPoint = new THREE.Vector3(0, frame.position.y, 3);
-     frame.lookAt(lookAtPoint);
-     
-     // Apply custom multiplier to rotation
-     frame.rotateY(frame.userData.fixedAngle * this.frameRotationMultiplier);
-     
-
+      // Modify rotation application
+      const lookAtPoint = new THREE.Vector3(0, frame.position.y, 3);
+      frame.lookAt(lookAtPoint);
+      
+      // Apply custom multiplier to rotation
+      frame.rotateY(frame.userData.fixedAngle * this.frameRotationMultiplier);
+      
       // Visibility logic
       const isBehindSpine = frame.position.z > 3;
       if (isBehindSpine) {
         frame.renderOrder = -1;
         frame.material.opacity = 0.4; // More ghostly when behind
-    } else {
+      } else {
         frame.renderOrder = 1;
         frame.material.opacity = 0.5; // More translucent like in the image
+      }
+      
+      // NEW: Calculate distance to center (front center is our target area)
+      const distanceToCenter = new THREE.Vector3(frame.position.x, 0, frame.position.z - 3).length();
+      
+      // Update closest frame tracking
+      if (distanceToCenter < minDistanceToCenter && !isBehindSpine) {
+        minDistanceToCenter = distanceToCenter;
+        closestFrameToCenter = frame;
+      }
+    });
+    
+   // If we found a close frame and it's within threshold distance
+if (closestFrameToCenter && minDistanceToCenter < this.centerThreshold) {
+  // Mark this frame as at center
+  closestFrameToCenter.userData.isAtCenter = true;
+  
+  // If this is a different frame than before, trigger callback
+  if (this.activeFrameIndex !== closestFrameToCenter.userData.index) {
+    this.activeFrameIndex = closestFrameToCenter.userData.index;
+    
+    // Highlight the active frame
+    closestFrameToCenter.material.emissiveIntensity = 0.3; // Increase glow
+    closestFrameToCenter.material.opacity = 0.8; // Make more visible
+    
+    // Scale up the active frame
+    closestFrameToCenter.userData.targetScale = 1.2;
+    
+    // Execute callback if provided
+    if (typeof this.onFrameAtCenter === 'function') {
+      this.onFrameAtCenter(closestFrameToCenter.userData.index, closestFrameToCenter.userData.text);
     }
-    });
-  }
-  
-  setupHoverEffects() {
-    // Create raycaster for hover detection
-    this.raycaster = new THREE.Raycaster();
-    this.mouse = new THREE.Vector2();
     
-    // Track which frame is currently hovered
-    this.hoveredFrame = null;
-    
-    // Mouse move event for hover detection
-    window.addEventListener('mousemove', (event) => {
-      // Update mouse position for raycaster
-      this.mouse.x = (event.clientX / this.width) * 2 - 1;
-      this.mouse.y = -(event.clientY / this.height) * 2 + 1;
-      
-      // Update raycaster
-      this.raycaster.setFromCamera(this.mouse, this.camera);
-      
-      // Check for intersections with frames
-      const intersects = this.raycaster.intersectObjects(this.videoFrames);
-      
-      // Reset previous hover state
-      this.videoFrames.forEach(frame => {
-        // If this frame was previously hovered but isn't now
-        if (frame.userData.isHovered && (!intersects.length || intersects[0].object !== frame)) {
-          frame.userData.isHovered = false;
-          frame.userData.targetScale = 1.0;
-          frame.material.emissiveIntensity = 0.15;
-        }
-      });
-      
-      // Handle new hover
-      if (intersects.length > 0) {
-        const hoveredFrame = intersects[0].object;
-        hoveredFrame.userData.isHovered = true;
-        hoveredFrame.userData.targetScale = 1.1;
-        hoveredFrame.material.emissiveIntensity = 0.3;
-        document.body.style.cursor = 'pointer';
-      } else {
-        document.body.style.cursor = 'default';
-      }
-    });
-    
-    // Click event for frames
-    window.addEventListener('click', (event) => {
-      // Update raycaster
-      this.raycaster.setFromCamera(this.mouse, this.camera);
-      
-      // Check for intersections with frames
-      const intersects = this.raycaster.intersectObjects(this.videoFrames);
-      
-      if (intersects.length > 0) {
-        const clickedFrame = intersects[0].object;
-        // Handle frame click - could open modal, play video, etc.
-        console.log("Clicked frame:", clickedFrame.userData.index);
+    // Reset other frames
+    this.videoFrames.forEach(otherFrame => {
+      if (otherFrame !== closestFrameToCenter) {
+        otherFrame.material.emissiveIntensity = 0.15; // Reset glow
+        otherFrame.userData.targetScale = 1.0; // Reset scale
       }
     });
   }
+} else {
+  // No frame at center
+  if (this.activeFrameIndex !== -1) {
+    // Reset all frames when leaving center
+    this.videoFrames.forEach(frame => {
+      frame.material.emissiveIntensity = 0.15;
+      frame.userData.targetScale = 1.0;
+    });
+    
+    // Reset active frame index
+    this.activeFrameIndex = -1;
+    
+    // Execute callback with -1 to indicate no frame is at center
+    if (typeof this.onFrameAtCenter === 'function') {
+      this.onFrameAtCenter(-1, null);
+    }
+  }
+}
+}
 
+setupHoverEffects() {
+  // Setup mouse move listener for parallax effect
+  window.addEventListener('mousemove', (event) => {
+    // Calculate normalized position (-1 to 1)
+    this.cursor.x = (event.clientX / this.width) * 2 - 1;
+    this.cursor.y = -(event.clientY / this.height) * 2 + 1;
+    
+    // Apply subtle camera movement based on cursor
+    if (this.camera) {
+      // Smooth camera movement - subtle parallax
+      this.camera.position.x += (this.cursor.x * 0.5 - this.camera.position.x) * 0.05;
+      this.camera.position.y += (this.cursor.y * 0.5 - this.camera.position.y) * 0.05;
+      this.camera.lookAt(new THREE.Vector3(0, 0, 3)); // Look at spine
+    }
+  });
   
-  setupEvents() {
-    // Resize handler
-    window.addEventListener('resize', () => {
-      this.width = window.innerWidth;
-      this.height = window.innerHeight;
-      
-      // Update camera
-      this.camera.aspect = this.width / this.height;
-      this.camera.updateProjectionMatrix();
-      
-      // Update renderer and composer
-      this.renderer.setSize(this.width, this.height);
-      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      this.composer.setSize(this.width, this.height);
-    });
+  // Setup raycaster for frame interaction
+  this.raycaster = new THREE.Raycaster();
+  this.mouse = new THREE.Vector2();
+  
+  // Add mouse move event for hover effects
+  this.renderer.domElement.addEventListener('mousemove', (event) => {
+    // Calculate mouse position in normalized device coordinates
+    this.mouse.x = (event.clientX / this.width) * 2 - 1;
+    this.mouse.y = -(event.clientY / this.height) * 2 + 1;
     
-    // Mouse move for interactive effects
-    window.addEventListener('mousemove', (event) => {
-      this.cursor.x = (event.clientX / this.width) * 2 - 1;
-      this.cursor.y = -(event.clientY / this.height) * 2 + 1;
-    });
+    // Update the raycaster
+    this.raycaster.setFromCamera(this.mouse, this.camera);
     
-    // Touch events for mobile
-    window.addEventListener('touchmove', (event) => {
-      if (event.touches.length > 0) {
-        this.cursor.x = (event.touches[0].clientX / this.width) * 2 - 1;
-        this.cursor.y = -(event.touches[0].clientY / this.height) * 2 + 1;
+    // Check for intersections with video frames
+    const intersects = this.raycaster.intersectObjects(this.videoFrames);
+    
+    // Reset all frames
+    this.videoFrames.forEach(frame => {
+      if (frame !== this.activeFrame) {
+        // Small scale for non-hovered frames (but don't reset the active center frame)
+        if (!frame.userData.isAtCenter) {
+          frame.userData.targetScale = 1.0;
+        }
       }
     });
-  }
+    
+    // If we intersect with a frame
+    if (intersects.length > 0) {
+      const hoveredFrame = intersects[0].object;
+      this.activeFrame = hoveredFrame;
+      
+      // Slightly larger scale on hover
+      hoveredFrame.userData.targetScale = 1.15;
+      
+      // Add cursor change
+      document.body.style.cursor = 'pointer';
+    } else {
+      this.activeFrame = null;
+      document.body.style.cursor = 'auto';
+    }
+  });
   
-  animate() {
-    requestAnimationFrame(this.animate.bind(this));
+  // Add click event for frames
+  this.renderer.domElement.addEventListener('click', (event) => {
+    // Update the mouse position
+    this.mouse.x = (event.clientX / this.width) * 2 - 1;
+    this.mouse.y = -(event.clientY / this.height) * 2 + 1;
     
-    // Update scene elements with time-based animations
-    this.updateScene();
+    // Update the raycaster
+    this.raycaster.setFromCamera(this.mouse, this.camera);
     
-    // Render scene with post-processing
-    this.composer.render();
+    // Check for intersections with video frames
+    const intersects = this.raycaster.intersectObjects(this.videoFrames);
+    
+    // If we click on a frame
+    if (intersects.length > 0) {
+      const clickedFrame = intersects[0].object;
+      console.log(`Clicked on frame ${clickedFrame.userData.index} - ${clickedFrame.userData.text}`);
+      
+      // Here you can trigger an action when clicking a frame
+      // For example, open a modal with content related to the frame
+      if (typeof this.onFrameClicked === 'function') {
+        this.onFrameClicked(clickedFrame.userData.index, clickedFrame.userData.text);
+      }
+    }
+  });
+}
+
+setupEvents() {
+  // Resize event for responsive design
+  window.addEventListener('resize', () => {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    
+    // Update camera
+    this.camera.aspect = this.width / this.height;
+    this.camera.updateProjectionMatrix();
+    
+    // Update renderer and composer
+    this.renderer.setSize(this.width, this.height);
+    this.composer.setSize(this.width, this.height);
+  });
+  
+  // Additional method for frame click handling
+  this.onFrameClicked = null;
+}
+
+// NEW: Method to set callback for frame clicks
+setFrameClickCallback(callback) {
+  if (typeof callback === 'function') {
+    this.onFrameClicked = callback;
   }
 }
 
-// On DOM loaded
-window.addEventListener('DOMContentLoaded', () => {
-  // Make sure GSAP and ScrollTrigger are loaded
-  if (typeof gsap === 'undefined') {
-    console.warn('GSAP not found. Please include GSAP in your project.');
-    
-    // Load GSAP dynamically if needed
-    const gsapScript = document.createElement('script');
-    gsapScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
-    document.head.appendChild(gsapScript);
-    
-    gsapScript.onload = () => {
-      const scrollTriggerScript = document.createElement('script');
-      scrollTriggerScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js';
-      document.head.appendChild(scrollTriggerScript);
-      
-      scrollTriggerScript.onload = () => {
-        // Initialize experience after scripts are loaded
-        const experience = new SpineExperience();
-      };
-    };
-  } else {
-    // Initialize directly if GSAP is already available
-    const experience = new SpineExperience();
+animate() {
+  requestAnimationFrame(this.animate.bind(this));
+  
+  // Update scene elements
+  this.updateScene();
+  
+  // Render with post-processing
+  this.composer.render();
+}
+
+// NEW: Method to programmatically update display
+updateContentForFrame(frameIndex) {
+  // This method can be called externally to update content
+  // when a specific frame index is active
+  console.log(`Updating content for frame ${frameIndex}`);
+  
+  // Implementation would depend on how you want to show/hide content
+  // For example:
+  document.querySelectorAll('.frame-content').forEach(el => {
+    el.style.display = 'none';
+  });
+  
+  const targetContent = document.querySelector(`.frame-content[data-frame="${frameIndex}"]`);
+  if (targetContent) {
+    targetContent.style.display = 'block';
   }
+}
+
+// NEW: Method to programmatically move to a specific frame
+goToFrame(frameIndex) {
+  if (frameIndex >= 0 && frameIndex < this.totalFrames) {
+    // Calculate the scroll position that would put this frame at center
+    const targetProgress = (frameIndex / this.totalFrames) % 1;
+    
+    // If using GSAP ScrollTrigger
+    if (typeof ScrollTrigger !== 'undefined') {
+      const scrollTrigger = ScrollTrigger.getById('spine-scroll');
+      if (scrollTrigger) {
+        scrollTrigger.scroll(targetProgress);
+      }
+    } else {
+      // Calculate scroll position without GSAP
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const targetScrollY = targetProgress * maxScroll;
+      window.scrollTo({
+        top: targetScrollY,
+        behavior: 'smooth'
+      });
+    }
+  }
+}
+}
+
+// Usage example for the SpineExperience class
+document.addEventListener('DOMContentLoaded', () => {
+  const spineExperience = new SpineExperience();
+  
+  // Set callback for when a frame reaches center
+  spineExperience.setFrameAtCenterCallback((frameIndex, frameText) => {
+    if (frameIndex >= 0) {
+      console.log(`Frame at center: ${frameIndex} - ${frameText}`);
+      
+      // Update UI based on frame
+      document.querySelectorAll('.frame-content').forEach(el => {
+        el.classList.remove('active');
+      });
+      
+      const contentElement = document.querySelector(`.frame-content[data-frame="${frameIndex}"]`);
+      if (contentElement) {
+        contentElement.classList.add('active');
+      }
+      
+      // Update frame info display
+      const frameInfoElement = document.getElementById('frame-info');
+      if (frameInfoElement) {
+        frameInfoElement.textContent = frameText || `Frame ${frameIndex + 1}`;
+      }
+    } else {
+      console.log('No frame at center');
+      
+      // Hide all content when no frame is at center
+      document.querySelectorAll('.frame-content').forEach(el => {
+        el.classList.remove('active');
+      });
+      
+      const frameInfoElement = document.getElementById('frame-info');
+      if (frameInfoElement) {
+        frameInfoElement.textContent = '';
+      }
+    }
+  });
+  
+  // Set callback for frame clicks
+  spineExperience.setFrameClickCallback((frameIndex, frameText) => {
+    console.log(`Frame clicked: ${frameIndex} - ${frameText}`);
+    
+    // Example: Show modal with frame content
+    const modal = document.getElementById('frame-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+    
+    if (modal && modalTitle && modalContent) {
+      modalTitle.textContent = frameText || `Frame ${frameIndex + 1}`;
+      modalContent.innerHTML = `<p>Content for frame ${frameIndex + 1}</p>`;
+      modal.style.display = 'block';
+    }
+  });
+  
+  // Example of setting rotation multipliers
+  // document.getElementById('speed-slider').addEventListener('input', (e) => {
+  //   const value = parseFloat(e.target.value);
+  //   spineExperience.setRotationMultipliers(value, value);
+  // });
+  
+  // Close modal functionality
+  const closeButtons = document.querySelectorAll('.close-modal');
+  closeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const modal = document.getElementById('frame-modal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    });
+  });
 });
