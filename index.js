@@ -69,118 +69,50 @@ class SpineExperience {
     }
   }
 
-  createCenterTextElements() {
-    // Create HTML elements for morphing text
-    const container = document.createElement('div');
-    container.id = 'center-text-container';
-    container.style.position = 'fixed';
-    container.style.top = '50%';
-    container.style.left = '50%';
-    container.style.transform = 'translate(-50%, -50%)';
-    container.style.zIndex = '1000';
-    container.style.pointerEvents = 'none';
-    
-    this.centerTextElement1 = document.createElement('span');
-    this.centerTextElement1.id = 'center-text1';
-    this.centerTextElement1.style.position = 'absolute';
-    this.centerTextElement1.style.width = '100%';
-    this.centerTextElement1.style.display = 'inline-block';
-    this.centerTextElement1.style.fontFamily = "'Raleway', sans-serif";
-    this.centerTextElement1.style.fontSize = '80pt';
-    this.centerTextElement1.style.textAlign = 'center';
-    this.centerTextElement1.style.userSelect = 'none';
-    this.centerTextElement1.style.filter = 'url(#threshold) blur(0.6px)';
-    this.centerTextElement1.style.opacity = '0%';
-    
-    this.centerTextElement2 = document.createElement('span');
-    this.centerTextElement2.id = 'center-text2';
-    this.centerTextElement2.style.position = 'absolute';
-    this.centerTextElement2.style.width = '100%';
-    this.centerTextElement2.style.display = 'inline-block';
-    this.centerTextElement2.style.fontFamily = "'Raleway', sans-serif";
-    this.centerTextElement2.style.fontSize = '80pt';
-    this.centerTextElement2.style.textAlign = 'center';
-    this.centerTextElement2.style.userSelect = 'none';
-    this.centerTextElement2.style.filter = 'url(#threshold) blur(0.6px)';
-    this.centerTextElement2.style.opacity = '100%';
-    
-    container.appendChild(this.centerTextElement1);
-    container.appendChild(this.centerTextElement2);
-    document.body.appendChild(container);
-    
-    // Add SVG filter if not already present
-    if (!document.getElementById('filters')) {
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.id = 'filters';
-      svg.style.position = 'absolute';
-      svg.style.width = '0';
-      svg.style.height = '0';
-      
-      const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-      const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
-      filter.id = 'threshold';
-      
-      const feColorMatrix = document.createElementNS('http://www.w3.org/2000/svg', 'feColorMatrix');
-      feColorMatrix.setAttribute('in', 'SourceGraphic');
-      feColorMatrix.setAttribute('type', 'matrix');
-      feColorMatrix.setAttribute('values', '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 255 -140');
-      
-      filter.appendChild(feColorMatrix);
-      defs.appendChild(filter);
-      svg.appendChild(defs);
-      document.body.appendChild(svg);
-    }
-  }
-
-  updateMorphing(dt) {
-    if (this.isMorphing) {
-      this.doMorph();
-    } else if (this.cooldown > 0) {
-      this.cooldown -= dt;
-      this.doCooldown();
-    }
-  }
   
-  init() {
-    // Create scene
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x15202a);
-    
-    // Create camera
-    this.camera = new THREE.PerspectiveCamera(35, this.width / this.height, 0.1, 1000);
-    this.camera.position.z = 12; // Moved back to see more of the scene
-    
-    // Create renderer
-    this.renderer = new THREE.WebGLRenderer({ 
-      antialias: true,
-      alpha: true
-    });
-    this.renderer.setSize(this.width, this.height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.container.appendChild(this.renderer.domElement);
-    
-    // Post processing with reduced bloom effect
-    this.setupPostProcessing();
-    
-    // Add lighting
-    this.setupLighting();
-    
-    // Load spine model
-    this.loadSpineModel();
-    
-    // Create spiral path and frames
-    this.createCircularPath();
-    this.createVideoFrames();
-    this.createUnderwaterParticles();
+  // Modify init method to initialize debug visualization
+init() {
+  // Create scene
+  this.scene = new THREE.Scene();
+  this.scene.background = new THREE.Color(0x15202a);
+  
+  // Create camera
+  this.camera = new THREE.PerspectiveCamera(35, this.width / this.height, 0.1, 1000);
+  this.camera.position.z = 12;
+  
+  // Create renderer
+  this.renderer = new THREE.WebGLRenderer({ 
+    antialias: true,
+    alpha: true
+  });
+  this.renderer.setSize(this.width, this.height);
+  this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  this.renderer.shadowMap.enabled = true;
+  this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  this.container.appendChild(this.renderer.domElement);
+  
+  // Post processing with reduced bloom effect
+  this.setupPostProcessing();
+  
+  // Add lighting
+  this.setupLighting();
+  
+  // Load spine model
+  this.loadSpineModel();
+  
+  // Create spiral path and frames
+  this.createCircularPath();
+  this.createVideoFrames();
+  this.createUnderwaterParticles();
+  
 
-    // Setup hover effects (simplified to remove zoom)
-    this.setupHoverEffects();
-    
-    // Start animation loop
-    this.animate();
-  }
+
+  // Setup hover effects (simplified to remove zoom)
+  this.setupHoverEffects();
+  
+  // Start animation loop
+  this.animate();
+}
   
   setupPostProcessing() {
     this.composer = new EffectComposer(this.renderer);
@@ -319,45 +251,48 @@ class SpineExperience {
   }
   
   // Modified to create a circular path that wraps around the spine model
-  createCircularPath() {
-    // Define points along a circular path that wraps around the spine model
-    this.pathPoints = [];
-    const totalPoints = 80;
+  // Modified to create a circular path that wraps around the spine model
+// with frames coming from bottom left instead of bottom right
+createCircularPath() {
+  // Define points along a circular path that wraps around the spine model
+  this.pathPoints = [];
+  const totalPoints = 80;
+  
+  // Create a path that wraps around the spine model
+  for (let i = 0; i < totalPoints; i++) {
+    const t = i / (totalPoints - 1);
+    const angle = t * Math.PI * 4; // 2 full rotations
     
-    // Create a path that wraps around the spine model
-    for (let i = 0; i < totalPoints; i++) {
-      const t = i / (totalPoints - 1);
-      const angle = t * Math.PI * 4; // 2 full rotations
-      
-      // MODIFY: Reduce radius to bring frames closer to spine
-      const radius = 2.8 + Math.sin(t * Math.PI * 2) * 0.3; // Reduced from 3.2 to 2.5 and reduced variation
-      const verticalPosition = -5 + t * 10; // Start below, rise up above
-      
-      // Calculate position with nice distribution around spine
-      const x = radius * Math.sin(angle);
-      const y = verticalPosition;
-      const z = 3 + radius * Math.cos(angle) * 0.8;
-      
-      // Determine if this point is in front or behind the spine
-      const isFront = z < 3;
-      
-      this.pathPoints.push({
-        x: x,
-        y: y,
-        z: z,
-        frameWidth: 1.2 + Math.random() * 0.3,
-        frameHeight: 0.8 + Math.random() * 0.2,
-        depthPosition: isFront ? 'front' : 'behind',
-        angle: angle
-      });
-    }
+    // Radius is the same
+    const radius = 2.8 + Math.sin(t * Math.PI * 2) * 0.3;
+    const verticalPosition = -5 + t * 10; // Start below, rise up above
     
-    // Create a curve that passes through these points
-    const points = this.pathPoints.map(point => 
-      new THREE.Vector3(point.x, point.y, point.z)
-    );
-    this.framePath = new THREE.CatmullRomCurve3(points, true);
+    // MODIFIED: Inverse the x position to make frames come from left side
+    // Changed sin to -sin to mirror the x coordinates
+    const x = -radius * Math.sin(angle);
+    const y = verticalPosition;
+    const z = 3 + radius * Math.cos(angle) * 0.8;
+    
+    // Determine if this point is in front or behind the spine
+    const isFront = z < 3;
+    
+    this.pathPoints.push({
+      x: x,
+      y: y,
+      z: z,
+      frameWidth: 1.2 + Math.random() * 0.3,
+      frameHeight: 0.8 + Math.random() * 0.2,
+      depthPosition: isFront ? 'front' : 'behind',
+      angle: angle
+    });
   }
+  
+  // Create a curve that passes through these points
+  const points = this.pathPoints.map(point => 
+    new THREE.Vector3(point.x, point.y, point.z)
+  );
+  this.framePath = new THREE.CatmullRomCurve3(points, true);
+}
 
   loadFont() {
     return new Promise((resolve, reject) => {
@@ -412,10 +347,11 @@ class SpineExperience {
   
     // Position text slightly in front of the frame
     textMesh.position.copy(frame.position);
-    textMesh.position.z += 0.1;
-  
+    textMesh.position.z -= 0.1;
+    
     // Apply billboard rotation
     textMesh.quaternion.setFromRotationMatrix(billboardMatrix);
+    
   
     // Reset scale to match frame
     textMesh.scale.set(1, 1, 1);
@@ -601,19 +537,19 @@ class SpineExperience {
     this.time = this.clock.getElapsedTime();
     
     // Calculate scroll velocity - for smoother animations
-    const currentTime = performance.now();
-    const deltaTime = currentTime - this.lastScrollTime;
-    this.lastScrollTime = currentTime;
-    
-    // Calculate scroll direction for better movement control
-    if (this.scrollProgress > this.lastScrollY) {
-      this.scrollDirection = 1; // scrolling down
-    } else if (this.scrollProgress < this.lastScrollY) {
-      this.scrollDirection = -1; // scrolling up
-    } else {
-      this.scrollDirection = 0; // not scrolling
-    }
-    this.lastScrollY = this.scrollProgress;
+  const currentTime = performance.now();
+  const deltaTime = currentTime - this.lastScrollTime;
+  this.lastScrollTime = currentTime;
+  
+  // Calculate scroll direction for better movement control
+  if (this.scrollProgress > this.lastScrollY) {
+    this.scrollDirection = 1; // scrolling down
+  } else if (this.scrollProgress < this.lastScrollY) {
+    this.scrollDirection = -1; // scrolling up
+  } else {
+    this.scrollDirection = 0; // not scrolling
+  }
+  this.lastScrollY = this.scrollProgress;
     
     // Gentle floating animation for spine model
     if (this.spineModel) {
@@ -694,6 +630,28 @@ class SpineExperience {
         }
       }
     });
+     // Update debug trackers
+  if (this.frameTrackers && this.frameTrackers.length > 0) {
+    this.videoFrames.forEach((frame, index) => {
+      if (index < this.frameTrackers.length) {
+        // Update tracker position to match frame's position on curve
+        const tracker = this.frameTrackers[index];
+        
+        // Get current path position
+        const pointOnPath = this.framePath.getPoint(frame.userData.currentT || 0);
+        tracker.position.copy(pointOnPath);
+        
+        // Highlight active frame tracker
+        if (frame.userData.isAtCenter) {
+          tracker.material.color.set(0xffffff);
+          tracker.scale.set(1.5, 1.5, 1.5);
+        } else {
+          tracker.material.color.set(this.frameColors[index % this.frameColors.length]);
+          tracker.scale.set(1.0, 1.0, 1.0);
+        }
+      }
+    });
+  }
   }
   
   setupGSAP() {
@@ -747,130 +705,160 @@ class SpineExperience {
     this.spineRotationMultiplier = spineMultiplier;
   }
 
-  // Modified to check for center position
-  updateFramesOnScroll(progress) {
-    // Reset all frames' center status
-    this.videoFrames.forEach(frame => {
-      frame.userData.isAtCenter = false;
-    });
+
+// Update frames on path with current parameters
+updateFramesOnPath() {
+  this.videoFrames.forEach((frame, index) => {
+    // Base offset for frame spacing
+    const baseOffset = index / this.totalFrames;
     
-    // Track the frame closest to center
-    let closestFrameToCenter = null;
-    let minDistanceToCenter = Infinity;
-    
-    this.videoFrames.forEach((frame, index) => {
-      // Base offset for frame spacing
-      const baseOffset = index / this.totalFrames;
-      
-      // Current path position
-      let currentPosition = frame.userData.currentT || baseOffset;
-      
-      // Calculate target position with wrapping
-      let targetPosition = (baseOffset + progress) % 1;
-      
-      // Handle frame wrapping to prevent sudden jumps
-      // If the difference is more than 0.5, it means we're wrapping around
-      if (Math.abs(targetPosition - currentPosition) > 0.5) {
-        // Adjust position to prevent the jump
-        if (targetPosition > currentPosition) {
-          // Frame is trying to jump from end to beginning
-          targetPosition = 0;
-          currentPosition = 0.99; // Place it at the end
-        } else {
-          // Frame is trying to jump from beginning to end
-          targetPosition = 0.99;
-          currentPosition = 0; // Place it at the beginning
-        }
-      }
-      
-      // Smooth interpolation (lerp) to target position
-      const smoothFactor = 0.05; // Lower = smoother but slower
-      let newPosition = currentPosition + (targetPosition - currentPosition) * smoothFactor;
-      newPosition = newPosition % 1; // Keep within 0-1 range
-      
-      // Store the current position for next frame
-      frame.userData.currentT = newPosition;
-      
-      // Get point on path for this position value
-      const pointOnPath = this.framePath.getPoint(newPosition);
-      
-      // Update frame position
-      frame.position.copy(pointOnPath);
-      
-      // Modify rotation application
-      const lookAtPoint = new THREE.Vector3(0, frame.position.y, 3);
-      frame.lookAt(lookAtPoint);
-      
-      // Apply custom multiplier to rotation
-      frame.rotateY(frame.userData.fixedAngle * this.frameRotationMultiplier);
-      
-      // Visibility logic
-      const isBehindSpine = frame.position.z > 3;
-      if (isBehindSpine) {
-        frame.renderOrder = -1;
-        frame.material.opacity = 0.4; // More ghostly when behind
-      } else {
-        frame.renderOrder = 1;
-        frame.material.opacity = 0.5; // More translucent like in the image
-      }
-      
-      // NEW: Calculate distance to center (front center is our target area)
-      const distanceToCenter = new THREE.Vector3(frame.position.x, 0, frame.position.z - 3).length();
-      
-      // Update closest frame tracking
-      if (distanceToCenter < minDistanceToCenter && !isBehindSpine) {
-        minDistanceToCenter = distanceToCenter;
-        closestFrameToCenter = frame;
-      }
-    });
-    
-   // If we found a close frame and it's within threshold distance
-if (closestFrameToCenter && minDistanceToCenter < this.centerThreshold) {
-  // Mark this frame as at center
-  closestFrameToCenter.userData.isAtCenter = true;
-  
-  // If this is a different frame than before, trigger callback
-  if (this.activeFrameIndex !== closestFrameToCenter.userData.index) {
-    this.activeFrameIndex = closestFrameToCenter.userData.index;
-    
-    // Highlight the active frame
-    closestFrameToCenter.material.emissiveIntensity = 0.3; // Increase glow
-    closestFrameToCenter.material.opacity = 0.8; // Make more visible
-    
-    // Scale up the active frame
-    closestFrameToCenter.userData.targetScale = 1.2;
-    
-    // Execute callback if provided
-    if (typeof this.onFrameAtCenter === 'function') {
-      this.onFrameAtCenter(closestFrameToCenter.userData.index, closestFrameToCenter.userData.text);
+    // Reset current position if not set
+    if (frame.userData.currentT === undefined) {
+      frame.userData.currentT = baseOffset;
     }
     
-    // Reset other frames
-    this.videoFrames.forEach(otherFrame => {
-      if (otherFrame !== closestFrameToCenter) {
-        otherFrame.material.emissiveIntensity = 0.15; // Reset glow
-        otherFrame.userData.targetScale = 1.0; // Reset scale
-      }
-    });
-  }
-} else {
-  // No frame at center
-  if (this.activeFrameIndex !== -1) {
-    // Reset all frames when leaving center
-    this.videoFrames.forEach(frame => {
-      frame.material.emissiveIntensity = 0.15;
-      frame.userData.targetScale = 1.0;
-    });
+    // Get point on path for this position value
+    const pointOnPath = this.framePath.getPoint(frame.userData.currentT);
     
-    // Reset active frame index
-    this.activeFrameIndex = -1;
+    // Update frame position
+    frame.position.copy(pointOnPath);
     
-    // Execute callback with -1 to indicate no frame is at center
-    if (typeof this.onFrameAtCenter === 'function') {
-      this.onFrameAtCenter(-1, null);
-    }
-  }
+    // Update rotation
+    const lookAtPoint = new THREE.Vector3(0, frame.position.y, 3);
+    frame.lookAt(lookAtPoint);
+    frame.rotateY(frame.userData.fixedAngle * this.frameRotationMultiplier);
+  });
 }
+
+updateFramesOnScroll(progress) {
+  // Reset all frames' center status
+  this.videoFrames.forEach(frame => {
+    frame.userData.isAtCenter = false;
+  });
+  
+  // Track the frame closest to center
+  let closestFrameToCenter = null;
+  let minDistanceToCenter = Infinity;
+  
+  this.videoFrames.forEach((frame, index) => {
+    // Base offset for frame spacing
+    const baseOffset = index / this.totalFrames;
+    
+    // Current path position
+    let currentPosition = frame.userData.currentT || baseOffset;
+    
+    // Calculate target position with wrapping
+    let targetPosition = (baseOffset + progress) % 1;
+    
+    // Handle frame wrapping to prevent sudden jumps
+    if (Math.abs(targetPosition - currentPosition) > 0.5) {
+      if (targetPosition > currentPosition) {
+        targetPosition = 0;
+        currentPosition = 0.99;
+      } else {
+        targetPosition = 0.99;
+        currentPosition = 0;
+      }
+    }
+    
+    // Use configurable smoothFactor
+    const smoothFactor = this.frameSmoothFactor || 0.05;
+    let newPosition = currentPosition + (targetPosition - currentPosition) * smoothFactor;
+    newPosition = newPosition % 1;
+    
+    // Store the current position for next frame
+    frame.userData.currentT = newPosition;
+    
+    // Get point on path for this position value
+    const pointOnPath = this.framePath.getPoint(newPosition);
+    
+    // Update frame position
+    frame.position.copy(pointOnPath);
+    
+    // ---- PRESERVE ORIGINAL ROTATION LOGIC ----
+    // Apply original rotation with configurable multiplier
+    const lookAtPoint = new THREE.Vector3(0, frame.position.y, 3);
+    frame.lookAt(lookAtPoint);
+    frame.rotateY(frame.userData.fixedAngle * this.frameRotationMultiplier);
+    
+    // ---- ADD NEW SUPER FAST Y-ROTATION ----
+    // Initialize rotation speed if not already set
+    if (!frame.userData.superFastRotationSpeed) {
+      // Very fast rotation - between 20-30 rotations per second
+      frame.userData.superFastRotationSpeed = Math.random() * 10 + 25;
+    }
+    
+    // Apply the super fast rotation (approximate for 60fps)
+    const deltaTime = 0.016; 
+    frame.rotateY(frame.userData.superFastRotationSpeed * deltaTime * Math.PI * 2);
+    
+    // Visibility logic
+    const isBehindSpine = frame.position.z > 3;
+    if (isBehindSpine) {
+      frame.renderOrder = -1;
+      frame.material.opacity = 0.4;
+    } else {
+      frame.renderOrder = 1;
+      frame.material.opacity = 0.5;
+    }
+    
+    // Calculate distance to center
+    const distanceToCenter = new THREE.Vector3(frame.position.x, 0, frame.position.z - 3).length();
+    
+    // Update closest frame tracking
+    if (distanceToCenter < minDistanceToCenter && !isBehindSpine) {
+      minDistanceToCenter = distanceToCenter;
+      closestFrameToCenter = frame;
+    }
+  });
+    
+  // If we found a close frame and it's within threshold distance
+  if (closestFrameToCenter && minDistanceToCenter < this.centerThreshold) {
+    // Mark this frame as at center
+    closestFrameToCenter.userData.isAtCenter = true;
+    
+    // If this is a different frame than before, trigger callback
+    if (this.activeFrameIndex !== closestFrameToCenter.userData.index) {
+      this.activeFrameIndex = closestFrameToCenter.userData.index;
+      
+      // Highlight the active frame
+      closestFrameToCenter.material.emissiveIntensity = 0.3; // Increase glow
+      closestFrameToCenter.material.opacity = 0.8; // Make more visible
+      
+      // Scale up the active frame
+      closestFrameToCenter.userData.targetScale = 1.2;
+      
+      // Execute callback if provided
+      if (typeof this.onFrameAtCenter === 'function') {
+        this.onFrameAtCenter(closestFrameToCenter.userData.index, closestFrameToCenter.userData.text);
+      }
+      
+      // Reset other frames
+      this.videoFrames.forEach(otherFrame => {
+        if (otherFrame !== closestFrameToCenter) {
+          otherFrame.material.emissiveIntensity = 0.15; // Reset glow
+          otherFrame.userData.targetScale = 1.0; // Reset scale
+        }
+      });
+    }
+  } else {
+    // No frame at center
+    if (this.activeFrameIndex !== -1) {
+      // Reset all frames when leaving center
+      this.videoFrames.forEach(frame => {
+        frame.material.emissiveIntensity = 0.15;
+        frame.userData.targetScale = 1.0;
+      });
+      
+      // Reset active frame index
+      this.activeFrameIndex = -1;
+      
+      // Execute callback with -1 to indicate no frame is at center
+      if (typeof this.onFrameAtCenter === 'function') {
+        this.onFrameAtCenter(-1, null);
+      }
+    }
+  }
 }
 
 setupHoverEffects() {
