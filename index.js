@@ -4,6 +4,341 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { FontLoader, TextGeometry } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
+  // Particle configurations
+  const particlesjsConfig1 = {
+    "particles": {
+      "number": {
+        "value": 200,
+        "density": {
+          "enable": true,
+          "value_area": 800
+        }
+      },
+      "color": {
+        "value": "#ffffff"
+      },
+      "shape": {
+        "type": "image",
+        "stroke": {
+          "width": 0,
+          "color": "#fa02dc"
+        },
+        "polygon": {
+          "nb_sides": 5
+        },
+        "image": {
+          "src": "https://res.cloudinary.com/df3z4ndtu/image/upload/v1743520977/ballpoint-isolated-transparent-background_wkpcal.png",
+          "width": 100,
+          "height": 100
+        }
+      },
+      "opacity": {
+        "value": 0.5,
+        "random": false,
+        "anim": {
+          "enable": false,
+          "speed": 1,
+          "opacity_min": 0.1,
+          "sync": false
+        }
+      },
+      "size": {
+        "value": 5,
+        "random": true,
+        "anim": {
+          "enable": false,
+          "speed": 80.39107415467574,
+          "size_min": 0.1,
+          "sync": false
+        }
+      },
+      "line_linked": {
+        "enable": false,
+        "distance": 150,
+        "color": "#ffffff",
+        "opacity": 0.4,
+        "width": 1
+      },
+      "move": {
+        "enable": true,
+        "speed": 0.2,
+        "direction": "none",
+        "random": false,
+        "straight": false,
+        "out_mode": "out",
+        "bounce": false,
+        "attract": {
+          "enable": false,
+          "rotateX": 600,
+          "rotateY": 1200
+        }
+      }
+    },
+    "interactivity": {
+      "detect_on": "canvas",
+      "events": {
+        "onhover": {
+          "enable": true,
+          "mode": "repulse"
+        },
+        "onclick": {
+          "enable": false,
+          "mode": "push"
+        },
+        "resize": true
+      },
+      "modes": {
+        "grab": {
+          "distance": 400,
+          "line_linked": {
+            "opacity": 1
+          }
+        },
+        "bubble": {
+          "distance": 400,
+          "size": 40,
+          "duration": 2,
+          "opacity": 8,
+          "speed": 3
+        },
+        "repulse": {
+          "distance": 48.721863124045896,
+          "duration": 0.4
+        },
+        "push": {
+          "particles_nb": 4
+        },
+        "remove": {
+          "particles_nb": 2
+        }
+      }
+    },
+    "retina_detect": true
+  };
+  
+  const particlesjsConfig2 = {
+    // Your second config with reduced particle count
+    "particles": {
+      "number": {
+        "value": 200,
+        "density": {
+          "enable": true,
+          "value_area": 800
+        }
+      },
+      "color": {
+        "value": "#ffffff"
+      },
+      "shape": {
+        "type": "image",
+        "stroke": {
+          "width": 0,
+          "color": "#fa02dc"
+        },
+        "polygon": {
+          "nb_sides": 5
+        },
+        "image": {
+          "src": "https://res.cloudinary.com/df3z4ndtu/image/upload/v1743520973/8e0171f5ca87e42b364c31a7aff2f5b9_oilaty.png",
+          "width": 100,
+          "height": 100
+        }
+      },
+      "opacity": {
+        "value": 0.5,
+        "random": false,
+        "anim": {
+          "enable": false,
+          "speed": 1,
+          "opacity_min": 0.1,
+          "sync": false
+        }
+      },
+      "size": {
+        "value": 5,
+        "random": true,
+        "anim": {
+          "enable": false,
+          "speed": 80.39107415467574,
+          "size_min": 0.1,
+          "sync": false
+        }
+      },
+      "line_linked": {
+        "enable": false,
+        "distance": 150,
+        "color": "#ffffff",
+        "opacity": 0.4,
+        "width": 1
+      },
+      "move": {
+        "enable": true,
+        "speed": 0.2,
+        "direction": "none",
+        "random": false,
+        "straight": false,
+        "out_mode": "out",
+        "bounce": false,
+        "attract": {
+          "enable": false,
+          "rotateX": 600,
+          "rotateY": 1200
+        }
+      }
+    },
+    "interactivity": {
+      "detect_on": "canvas",
+      "events": {
+        "onhover": {
+          "enable": true,
+          "mode": "repulse"
+        },
+        "onclick": {
+          "enable": false,
+          "mode": "push"
+        },
+        "resize": true
+      },
+      "modes": {
+        "grab": {
+          "distance": 400,
+          "line_linked": {
+            "opacity": 1
+          }
+        },
+        "bubble": {
+          "distance": 400,
+          "size": 40,
+          "duration": 2,
+          "opacity": 8,
+          "speed": 3
+        },
+        "repulse": {
+          "distance": 48.721863124045896,
+          "duration": 0.4
+        },
+        "push": {
+          "particles_nb": 4
+        },
+        "remove": {
+          "particles_nb": 2
+        }
+      }
+    },
+    "retina_detect": true
+  };
+  
+  const particlesjsConfig3 = {
+    // Your third config with reduced particle count
+    "particles": {
+      "number": {
+        "value": 200,
+        "density": {
+          "enable": true,
+          "value_area": 800
+        }
+      },
+      "color": {
+        "value": "#ffffff"
+      },
+      "shape": {
+        "type": "image",
+        "stroke": {
+          "width": 0,
+          "color": "#fa02dc"
+        },
+        "polygon": {
+          "nb_sides": 5
+        },
+        "image": {
+          "src": "https://res.cloudinary.com/df3z4ndtu/image/upload/v1743521814/Pngtree_round_green_bubble_illustration_5447499_zunhlq.png",
+          "width": 100,
+          "height": 100
+        }
+      },
+      "opacity": {
+        "value": 0.5,
+        "random": false,
+        "anim": {
+          "enable": false,
+          "speed": 1,
+          "opacity_min": 0.1,
+          "sync": false
+        }
+      },
+      "size": {
+        "value": 5,
+        "random": true,
+        "anim": {
+          "enable": false,
+          "speed": 80.39107415467574,
+          "size_min": 0.1,
+          "sync": false
+        }
+      },
+      "line_linked": {
+        "enable": false,
+        "distance": 150,
+        "color": "#ffffff",
+        "opacity": 0.4,
+        "width": 1
+      },
+      "move": {
+        "enable": true,
+        "speed": 0.2,
+        "direction": "none",
+        "random": false,
+        "straight": false,
+        "out_mode": "out",
+        "bounce": false,
+        "attract": {
+          "enable": false,
+          "rotateX": 600,
+          "rotateY": 1200
+        }
+      }
+    },
+    "interactivity": {
+      "detect_on": "canvas",
+      "events": {
+        "onhover": {
+          "enable": true,
+          "mode": "repulse"
+        },
+        "onclick": {
+          "enable": false,
+          "mode": "push"
+        },
+        "resize": true
+      },
+      "modes": {
+        "grab": {
+          "distance": 400,
+          "line_linked": {
+            "opacity": 1
+          }
+        },
+        "bubble": {
+          "distance": 400,
+          "size": 40,
+          "duration": 2,
+          "opacity": 8,
+          "speed": 3
+        },
+        "repulse": {
+          "distance": 48.721863124045896,
+          "duration": 0.4
+        },
+        "push": {
+          "particles_nb": 4
+        },
+        "remove": {
+          "particles_nb": 2
+        }
+      }
+    },
+    "retina_detect": true
+  };
 
 class SpineExperience {
   constructor() {
@@ -12,7 +347,9 @@ class SpineExperience {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     
-    
+      this.hasShownAllFrames = false;
+this.lastFrameIndexShown = -1;
+
      // New properties for rotation control
      this.frameRotationMultiplier = 0.1; // Default multiplier
      this.spineRotationMultiplier = 1; // Default multiplier
@@ -33,6 +370,8 @@ class SpineExperience {
       "Create", 
       "Inspire"
     ];
+
+  
 
     // NEW: Center position tracking
     this.centerPosition = new THREE.Vector3(0, 0, 3); // Center of the scene
@@ -69,7 +408,78 @@ class SpineExperience {
     }
   }
 
+  createParticleSystem() {
+    // Create a container group for all particles
+    this.particleSystems = new THREE.Group();
+    this.scene.add(this.particleSystems);
   
+    // Load all three particle configurations with different tints
+    this.loadParticlesFromConfig(particlesjsConfig1, 0x4a90e2); // Blue tint
+    this.loadParticlesFromConfig(particlesjsConfig2, 0xe24a90); // Pink tint
+    this.loadParticlesFromConfig(particlesjsConfig3, 0x4ae290); // Green tint
+  }
+
+loadParticlesFromConfig(config, tintColor) {
+  const particlesCount = config.particles.number.value;
+  
+  // Create texture loader
+  const textureLoader = new THREE.TextureLoader();
+  
+  // Load the particle image
+  textureLoader.load(config.particles.shape.image.src, (texture) => {
+    const particlesGeometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particlesCount * 3);
+    const colors = new Float32Array(particlesCount * 3);
+    const sizes = new Float32Array(particlesCount);
+    
+    // Set up particle positions, colors, and sizes
+    for (let i = 0; i < particlesCount; i++) {
+      // Positions
+      positions[i * 3] = (Math.random() - 0.5) * 20;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+      
+      // Colors
+      const color = new THREE.Color(tintColor);
+      color.offsetHSL(0, 0, Math.random() * 0.2 - 0.1);
+      colors[i * 3] = color.r;
+      colors[i * 3 + 1] = color.g;
+      colors[i * 3 + 2] = color.b;
+      
+      // Sizes
+      sizes[i] = config.particles.size.value * (0.5 + Math.random() * 0.5);
+    }
+    
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    particlesGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    
+    // Create material with texture
+    const particlesMaterial = new THREE.PointsMaterial({
+      map: texture,
+      size: config.particles.size.value * 0.1,
+      vertexColors: true,
+      transparent: true,
+      opacity: config.particles.opacity.value,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true,
+      alphaTest: 0.01 // Helps with transparency
+    });
+    
+    // Create particle system
+    const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial);
+    
+    // Store movement parameters
+    particleSystem.userData = {
+      speed: config.particles.move.speed * 0.1,
+      direction: config.particles.move.direction,
+      random: config.particles.move.random
+    };
+    
+    // Add to the particle systems group
+    this.particleSystems.add(particleSystem);
+  });
+}
   
   // Modify init method to initialize debug visualization
 init() {
@@ -105,7 +515,7 @@ init() {
   this.createCircularPath();
   this.createVideoFrames();
   this.createUnderwaterParticles();
-  
+  this.createParticleSystem();
 
 
   // Setup hover effects (simplified to remove zoom)
@@ -225,10 +635,8 @@ init() {
     );
   }
 
-    
-
   createUnderwaterParticles() {
-    const particleCount = 200;
+    const particleCount = 800;
     const particleGeometry = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
     
@@ -243,7 +651,7 @@ init() {
     
     const particleMaterial = new THREE.PointsMaterial({
       color: 0xffffff,
-      size: 0.05,
+      size: 0.1,
       transparent: true,
       opacity: 0.4,
       blending: THREE.AdditiveBlending
@@ -386,34 +794,7 @@ createCircularPath() {
       0xe2e24a, 0x9e4ae2, 0xe29a4a
     ];
 
-    // Modify text addition logic
-    this.loadFont().then(() => {
-      console.log('Font loaded, creating texts. Total frames:', this.videoFrames.length);
-      
-      this.videoFrames.forEach((frame, index) => {
-        try {
-          const text = this.createFrameText(
-            this.frameSampleTexts[index % this.frameSampleTexts.length] || `Frame ${index + 1}`, 
-            frame, 
-            frame.geometry.parameters?.width || 1, 
-            frame.geometry.parameters?.height || 1
-          );
-
-          if (text) {
-            console.log('Text created:', text);
-            this.scene.add(text);  // Add directly to scene instead of framesGroup
-            this.frameTexts.push(text);
-          } else {
-            console.warn('Failed to create text for frame', index);
-          }
-        } catch (error) {
-          console.error('Error creating frame text:', error);
-        }
-      });
-    }).catch(error => {
-      console.error('Font loading completely failed:', error);
-    });
-    
+   
     // Create the video frames
     for (let i = 0; i < this.totalFrames; i++) {
       // Get position on curve - distribute frames evenly
@@ -505,35 +886,83 @@ createCircularPath() {
       this.videoFrames.push(frame);
     }
 
-    // Modify the font loading section
+    // Modify text addition logic
     this.loadFont().then(() => {
-      // Ensure videoFrames are created before adding texts
-      if (this.videoFrames.length > 0) {
-        this.videoFrames.forEach((frame, index) => {
-          try {
-            // Safe text selection with fallback
-            const text = this.createFrameText(
-              this.frameSampleTexts[index % this.frameSampleTexts.length] || `Frame ${index + 1}`, 
-              frame, 
-              frame.geometry.parameters.width || 1, 
-              frame.geometry.parameters.height || 1
-            );
+      console.log('Font loaded, creating texts. Total frames:', this.videoFrames.length);
+      
+      this.videoFrames.forEach((frame, index) => {
+        try {
+          const text = this.createFrameText(
+            this.frameSampleTexts[index % this.frameSampleTexts.length] || `Frame ${index + 1}`, 
+            frame, 
+            frame.geometry.parameters?.width || 1, 
+            frame.geometry.parameters?.height || 1
+          );
 
-            if (text) {
-              this.framesGroup.add(text);
-              this.frameTexts.push(text);
-            }
-          } catch (error) {
-            console.error('Error creating frame text:', error);
+          if (text) {
+            console.log('Text created:', text);
+            this.scene.add(text);  // Add directly to scene instead of framesGroup
+            this.frameTexts.push(text);
+          } else {
+            console.warn('Failed to create text for frame', index);
           }
-        });
-      } else {
-        console.warn('No video frames created before adding texts');
-      }
+        } catch (error) {
+          console.error('Error creating frame text:', error);
+        }
+      });
     }).catch(error => {
-      console.error('Font loading failed:', error);
+      console.error('Font loading completely failed:', error);
     });
+    
   }
+  // Add this to your updateScene method to animate particles
+updateParticles() {
+  if (!this.particleSystems) return;
+  
+  const time = this.clock.getElapsedTime();
+  
+  this.particleSystems.children.forEach(particleSystem => {
+    const positions = particleSystem.geometry.attributes.position.array;
+    const userData = particleSystem.userData;
+    
+    for (let i = 0; i < positions.length; i += 3) {
+      // Apply movement based on configuration
+      switch (userData.direction) {
+        case 'none':
+          // Random movement if enabled
+          if (userData.random) {
+            positions[i] += (Math.random() - 0.5) * userData.speed;
+            positions[i + 1] += (Math.random() - 0.5) * userData.speed;
+            positions[i + 2] += (Math.random() - 0.5) * userData.speed;
+          }
+          break;
+        case 'top':
+          positions[i + 1] += userData.speed;
+          break;
+        case 'bottom':
+          positions[i + 1] -= userData.speed;
+          break;
+        // Add other directions as needed
+      }
+      
+      // Boundary check - wrap around if particles go too far
+      for (let j = 0; j < 3; j++) {
+        if (Math.abs(positions[i + j]) > 15) {
+          positions[i + j] = (Math.random() - 0.5) * 10;
+        }
+      }
+      
+      // Add subtle swaying motion
+      positions[i] += Math.sin(time + i) * 0.01;
+      positions[i + 2] += Math.cos(time + i * 1.3) * 0.01;
+    }
+    
+    particleSystem.geometry.attributes.position.needsUpdate = true;
+    
+    // Optional: Rotate the entire system slowly
+    particleSystem.rotation.y = time * 0.05;
+  });
+}
   
   updateScene() {
     // Time-based animation
@@ -543,6 +972,7 @@ createCircularPath() {
   const currentTime = performance.now();
   const deltaTime = currentTime - this.lastScrollTime;
   this.lastScrollTime = currentTime;
+  this.updateParticles();
   
   // Calculate scroll direction for better movement control
   if (this.scrollProgress > this.lastScrollY) {
@@ -600,39 +1030,46 @@ createCircularPath() {
         frame.scale.set(targetScale, targetScale, targetScale);
       }
     });
+    
+  this.frameTexts.forEach((textMesh) => {
+    const correspondingFrame = this.videoFrames.find(
+      frame => frame.userData.index === textMesh.userData.index
+    );
 
-    // Animate frame texts
-    this.frameTexts.forEach((textMesh) => {
-      // Match text position and rotation with its corresponding frame
-      const correspondingFrame = this.videoFrames.find(
-        frame => frame.userData.index === textMesh.userData.index
-      );
+    if (correspondingFrame) {
+      // 1. Position text relative to frame (with small z-offset)
+      textMesh.position.copy(correspondingFrame.position);
+      textMesh.position.z -= 0.1;
+      textMesh.quaternion.copy(correspondingFrame.quaternion);
 
-      if (correspondingFrame) {
-        // Update position and rotation
-        textMesh.position.copy(correspondingFrame.position);
-        textMesh.position.z += 0.1;  // Slight offset
-        textMesh.rotation.copy(correspondingFrame.rotation);
-
-        // Fade effect
-        const material = textMesh.material;
-        material.opacity -= textMesh.userData.fadeSpeed;
-
-        // Reset opacity when it becomes too low
-        if (material.opacity <= 0) {
-          material.opacity = textMesh.userData.initialOpacity;
+      // 2. Determine visibility - BEHIND spine (z > 3)
+      const isBehindSpine = correspondingFrame.position.z >= 4;
+      
+      // 3. Immediate visibility control (no lerp)
+      if (isBehindSpine) {
+        // Show immediately when behind spine
+        if (textMesh.material.opacity < 0.01) {
+          textMesh.material.opacity = textMesh.userData.initialOpacity;
         }
-
-        // Handle visibility based on frame position
-        const isBehindSpine = textMesh.position.z > 3;
-        if (isBehindSpine) {
-          textMesh.renderOrder = -1;
-          material.opacity *= 0.5; // More transparent when behind
-        } else {
-          textMesh.renderOrder = 1;
-        }
+      } else {
+        // Hide completely when in front
+        textMesh.material.opacity = 0;
       }
-    });
+
+      // 4. Force render update
+      textMesh.material.needsUpdate = true;
+      textMesh.visible = textMesh.material.opacity > 0.01;
+      
+      // 5. Debug logging
+      if (textMesh.userData.index === 0) {
+        console.log(`Frame ${textMesh.userData.index} | 
+          Z: ${correspondingFrame.position.z.toFixed(2)} | 
+          Behind: ${isBehindSpine} | 
+          Opacity: ${textMesh.material.opacity.toFixed(2)} |
+          Visible: ${textMesh.visible}`);
+      }
+    }
+  });
      // Update debug trackers
   if (this.frameTrackers && this.frameTrackers.length > 0) {
     this.videoFrames.forEach((frame, index) => {

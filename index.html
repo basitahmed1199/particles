@@ -84,9 +84,9 @@ canvas {
         }
         
         .sidebar {
-            position: relative;
+            position: fixed;
             top: 50%;
-            transform: translateY(-150%);
+            transform: translateY(-50%);
             left: 40px;
             z-index: -1;
         }
@@ -287,9 +287,17 @@ canvas {
 }
 
 .video-container video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    transform: translateZ(0); /* Promote to GPU layer */
+  will-change: transform, opacity; /* Hint browser about changes */
+  backface-visibility: hidden;
+}
+
+/* Disable expensive filters during animations */
+body.is-scrolling {
+  .video-container {
+    filter: none;
+    backdrop-filter: none;
+  }
 }
 
 .content-2 {
@@ -343,6 +351,35 @@ body {
     color: transparent;
     display: inline;
 }
+
+.scroll-indicator {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 50px;
+        border: 2px solid white;
+        border-radius: 15px;
+        opacity: 0.8;
+    }
+    .scroll-indicator:before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        width: 12px;
+        height: 12px;
+        background: white;
+        border-radius: 50%;
+        transform: translateX(-50%);
+        animation: scrollBounce 2s infinite;
+    }
+    @keyframes scrollBounce {
+        0% { top: 8px; opacity: 1; }
+        50% { top: 20px; opacity: 0.5; }
+        100% { top: 8px; opacity: 1; }
+    }
     </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -358,9 +395,14 @@ body {
     </div>
     <div class="container">
     <section class="section section-0">
+          <!-- Navigation -->
+        <nav class="navbar">
+            <a href="#work" class="nav-item">WORK</a>
+            <a href="#contact" class="nav-item">CONTACT</a>
+        </nav>
         <div class="video-container" style="opacity: 1;">
-            <video autoplay loop muted playsinline>
-                <source src="bubbles.mp4" type="video/mp4">
+            <video autoplay loop muted playsinline disablepictureinpicture preload="none">
+                <source src="particles.mp4" type="video/mp4" >
             </video>
         </div>
         <div id="particle-slider" class="particle-logo">
@@ -373,8 +415,13 @@ body {
     </section>
 
     <section class="section section-1">
+          <!-- Navigation -->
+          <nav class="navbar">
+            <a href="#work" class="nav-item">WORK</a>
+            <a href="#contact" class="nav-item">CONTACT</a>
+        </nav>
         <div class="video-container">
-            <video autoplay loop muted playsinline>
+            <video autoplay loop muted playsinline disablepictureinpicture preload="none">
                 <source src="line.mp4" type="video/mp4">
             </video>
         </div>
@@ -454,26 +501,33 @@ body {
 </div>
     
     <script>
-        // Detect first scroll and force-refresh ScrollTrigger
-let firstScrollHappened = false;
-window.addEventListener('scroll', () => {
-  if (!firstScrollHappened) {
-    firstScrollHappened = true;
-    ScrollTrigger.refresh();
-    // Optional: Add a slight delay to ensure calculations are done
-    setTimeout(() => ScrollTrigger.refresh(), 50);
-  }
-}, { once: true }); // Only runs once
-        document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
     const sections = [
         document.querySelector('.section-0'),
         document.querySelector('.section-1'),
         document.querySelector('.section-2')
     ];
 
-    const canvasContainer = document.getElementById('canvas-container');
-    const sidebar = document.querySelector('.sidebar');
+     // 1. Create scroll indicator element
+     const scrollIndicator = document.createElement('div');
+    scrollIndicator.className = 'scroll-indicator';
+    sections[0].appendChild(scrollIndicator);
 
+      // 2. GSAP animation for the indicator
+      gsap.to(scrollIndicator, {
+        opacity: 0,
+        y: 20,
+        duration: 0.5,
+        scrollTrigger: {
+            trigger: sections[0],
+            start: "top top",
+            end: "+=300px", // Disappears after 100px scroll
+            scrub: true,
+            onLeave: () => {
+                scrollIndicator.style.display = 'none'; // Remove completely
+            }
+        }
+    });
 
     // Initial setup
     gsap.set(sections, { 
@@ -482,103 +536,68 @@ window.addEventListener('scroll', () => {
         left: 0,
         width: '100%',
         height: '100vh',
-        zIndex: (i) => 3 - i // section-0: zIndex 3, section-1: 2, section-2: 1
+        zIndex: (i) => 3 - i
     });
 
-    // Section 0 starts fully visible, others hidden
-    gsap.set(sections[0], { clipPath: 'circle(100% at 50% 50%)' }); // Full screen
-    gsap.set(sections[1], { clipPath: 'circle(0% at 50% 50%)' });   // Fully hidden
-    gsap.set(sections[2], { clipPath: 'circle(0% at 50% 50%)' });   // Fully hidden
+    // Initial states
+    gsap.set(sections[0], { clipPath: 'circle(100% at 50% 50%)' });
+    gsap.set(sections[1], { clipPath: 'circle(0% at 50% 50%)' });
+    gsap.set(sections[2], { clipPath: 'circle(0% at 50% 50%)' });
 
-    // Main Timeline with ScrollTrigger
-    const mainTimeline = gsap.timeline({
+    // Master timeline with sequential animations
+    const master = gsap.timeline({
         scrollTrigger: {
             trigger: '.container',
-    start: 'top top', // Start when top of trigger hits top of viewport
-    end: '+=400%',
-    scrub: 1, // Faster response (0.3s instead of default 1s)
-    pin: true,
-    anticipatePin: 0, // Disable prediction (reduces lag)
-    markers: true, // Debug: Visualize start/end points
-    onEnter: () => console.log("Trigger entered!"), // Debug
-    fastScrollEnd: true, // Force animations to complete
-    // Add this to ensure calculations are correct:
-    invalidateOnRefresh: true
+            start: 'top top',
+            end: '+=400%', // Total scroll distance (adjust as needed)
+            scrub: 1,
+            pin: true,
+            markers: false,
+            anticipatePin: 1
         }
     });
 
-    // SECTION 0: Shrinks into a circle and disappears
-    mainTimeline.to(sections[0], {
-        clipPath: 'circle(0% at 50% 50%)', // Collapses to 0% radius
-        duration: 1,
-        ease: 'power2.in'
+    // SECTION 0 → SECTION 1 (first 33% of scroll)
+    master.to(sections[0], {
+        clipPath: 'circle(0% at 50% 50%)',
+        ease: 'power2.in',
+        duration: 2
+    }, 0);
+    
+    master.to(sections[1], {
+        clipPath: 'circle(100% at 50% 50%)',
+        ease: 'power2.out',
+        duration: 2
     }, 0);
 
-    // SECTION 1: Expands from a circle (reverse effect)
-    mainTimeline.to(sections[1], {
-        clipPath: 'circle(100% at 50% 50%)', // Expands to full screen
-        duration: 1,
-        ease: 'power2.out'
-    }, 0); // Starts at the same time as section-0's collapse
-
-    // SECTION 1 → SECTION 2: Repeat the same effect
-    mainTimeline.to(sections[1], {
+    // SECTION 1 → SECTION 2 (next 33-66% of scroll)
+    master.to(sections[1], {
         clipPath: 'circle(0% at 50% 50%)',
-        duration: 1,
-        ease: 'power2.in'
-    }, 0.5);
-
-    mainTimeline.to(sections[2], {
+        ease: 'power2.in',
+        duration: 2
+    }, 1); // Starts after first transition completes
+    
+    master.to(sections[2], {
         clipPath: 'circle(100% at 50% 50%)',
-        duration: 1,
-        ease: 'power2.out'
-    }, 0.5);
-    
-     // Scroll position handler for fixed elements
-     function handleScroll() {
-        const section1Bottom = sections[1].offsetTop + sections[1].offsetHeight;
-        const scrollPosition = window.scrollY;
+        ease: 'power2.out',
+        duration: 2
+    }, 1);
 
-        if (scrollPosition >= section1Bottom) {
-            canvasContainer.classList.add('fixed');
-            sidebar.classList.add('fixed');
-        } else {
-            canvasContainer.classList.remove('fixed');
-            sidebar.classList.remove('fixed');
-        }
-    }
+    // SECTION 2 HOLD (remaining scroll)
+    // Add empty space by extending the timeline
+    master.to({}, { duration: 1 }, 8); // Adjust duration to control hold length
 
-    // Enhanced scroll listener with debouncing
-    let isTicking = false;
-    window.addEventListener('scroll', () => {
-        if (!isTicking) {
-            window.requestAnimationFrame(() => {
-                handleScroll();
-                isTicking = false;
-            });
-            isTicking = true;
-        }
+    // Alternative: If you need precise pixel control for section-2's end:
+    /*
+    ScrollTrigger.create({
+        trigger: sections[2],
+        start: "top top",
+        end: "+=500px", // Exact pixel value where section-2 ends
+        pin: true,
+        markers: true
     });
-
-    // Initial call
-    handleScroll();
+    */
 });
-// Force ScrollTrigger to recalculate on load
-window.addEventListener('load', () => {
-  ScrollTrigger.refresh();
-  // Optional: Log to confirm it's ready
-  console.log("ScrollTrigger refreshed on load");
-});
-
-let hasScrolled = false;
-window.addEventListener('scroll', () => {
-  if (!hasScrolled) {
-    hasScrolled = true;
-    ScrollTrigger.refresh(); // Recalculate on first scroll
-  }
-}, { once: true }); // Runs only once
-    
-
         
     </script>
     <script type="module" src="morphing.js"></script>
