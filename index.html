@@ -12,6 +12,9 @@
             box-sizing: border-box;
         }
         
+        html{
+            overflow-x: hidden;
+        }
         body {
             font-family: 'JetBrains Mono', monospace;
             background-color: #050510;
@@ -26,8 +29,16 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+            pointer-events: none;
         }
         
+        /* Three.js canvas */
+canvas {
+  display: block;
+  position: fixed; /* Or absolute depending on needs */
+  z-index: 10;
+}
+
         .ui-overlay {
             position: relative;
             z-index: 2;
@@ -118,8 +129,10 @@
         }
 
         .container{
-            position: relative;
-            width: 100%;
+            position: relative; /* Required for pinning */
+  width: 100%;
+  height: 100vh; /* Must have explicit height */
+  overflow: visible; /* Prevents layout shifts */
         }
 
         .content {
@@ -133,16 +146,15 @@
         }
 
         .section-0{
-            z-index: 1;
+            z-index: 3;
             position: relative;
-            background: #070707;
-            
-            height: 150vh;
+            background: #ffffff;
+            height: 100vh;
         }
 
         .section-1 {
-            background: #070707;
-            z-index: 1;
+            background: #ffffff;
+            z-index: 2;
             position: relative;
             height: 100vh;
         }
@@ -154,8 +166,7 @@
             left: 0;
             width: 100%;
             height: 100vh;
-            
-            z-index: 2;
+            z-index: 1;
         }
         
         .section-title {
@@ -271,7 +282,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     z-index: -1;
 }
 
@@ -286,7 +297,6 @@
     z-index: 1;
     color: white;
     text-align: center;
-    padding: 20px;
     transform: translateY(50%);
 }
 
@@ -439,58 +449,130 @@ body {
 </div>
     
     <script>
-        // Simple section visibility on scroll
+        // Detect first scroll and force-refresh ScrollTrigger
+let firstScrollHappened = false;
+window.addEventListener('scroll', () => {
+  if (!firstScrollHappened) {
+    firstScrollHappened = true;
+    ScrollTrigger.refresh();
+    // Optional: Add a slight delay to ensure calculations are done
+    setTimeout(() => ScrollTrigger.refresh(), 50);
+  }
+}, { once: true }); // Only runs once
         document.addEventListener('DOMContentLoaded', () => {
+    const sections = [
+        document.querySelector('.section-0'),
+        document.querySelector('.section-1'),
+        document.querySelector('.section-2')
+    ];
 
-            
-           
-            // Simulate loading for demo
-            const loadingScreen = document.querySelector('.loading-screen');
-            const progress = document.querySelector('.loading-progress');
-            
-            let width = 0;
-            const interval = setInterval(() => {
-                width += Math.random() * 10;
-                if (width > 100) width = 100;
-                progress.style.width = width + '%';
-                
-                if (width === 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        loadingScreen.style.opacity = 0;
-                        setTimeout(() => {
-                            loadingScreen.style.display = 'none';
-                        }, 1000);
-                    }, 500);
-                }
-            }, 200);
-
-            // Get the elements we need to work with
-            const section1 = document.querySelector('.section-1');
-    const section2 = document.querySelector('.section-2');
     const canvasContainer = document.getElementById('canvas-container');
     const sidebar = document.querySelector('.sidebar');
 
-    function handleScroll() {
-        const section1Bottom = section1.offsetTop + section1.offsetHeight;
+
+    // Initial setup
+    gsap.set(sections, { 
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100vh',
+        zIndex: (i) => 3 - i // section-0: zIndex 3, section-1: 2, section-2: 1
+    });
+
+    // Section 0 starts fully visible, others hidden
+    gsap.set(sections[0], { clipPath: 'circle(100% at 50% 50%)' }); // Full screen
+    gsap.set(sections[1], { clipPath: 'circle(0% at 50% 50%)' });   // Fully hidden
+    gsap.set(sections[2], { clipPath: 'circle(0% at 50% 50%)' });   // Fully hidden
+
+    // Main Timeline with ScrollTrigger
+    const mainTimeline = gsap.timeline({
+        scrollTrigger: {
+            trigger: '.container',
+    start: 'top top', // Start when top of trigger hits top of viewport
+    end: '+=400%',
+    scrub: 1, // Faster response (0.3s instead of default 1s)
+    pin: true,
+    anticipatePin: 0, // Disable prediction (reduces lag)
+    markers: true, // Debug: Visualize start/end points
+    onEnter: () => console.log("Trigger entered!"), // Debug
+    fastScrollEnd: true, // Force animations to complete
+    // Add this to ensure calculations are correct:
+    invalidateOnRefresh: true
+        }
+    });
+
+    // SECTION 0: Shrinks into a circle and disappears
+    mainTimeline.to(sections[0], {
+        clipPath: 'circle(0% at 50% 50%)', // Collapses to 0% radius
+        duration: 1,
+        ease: 'power2.in'
+    }, 0);
+
+    // SECTION 1: Expands from a circle (reverse effect)
+    mainTimeline.to(sections[1], {
+        clipPath: 'circle(100% at 50% 50%)', // Expands to full screen
+        duration: 1,
+        ease: 'power2.out'
+    }, 0); // Starts at the same time as section-0's collapse
+
+    // SECTION 1 → SECTION 2: Repeat the same effect
+    mainTimeline.to(sections[1], {
+        clipPath: 'circle(0% at 50% 50%)',
+        duration: 1,
+        ease: 'power2.in'
+    }, 0.5);
+
+    mainTimeline.to(sections[2], {
+        clipPath: 'circle(100% at 50% 50%)',
+        duration: 1,
+        ease: 'power2.out'
+    }, 0.5);
+    
+     // Scroll position handler for fixed elements
+     function handleScroll() {
+        const section1Bottom = sections[1].offsetTop + sections[1].offsetHeight;
         const scrollPosition = window.scrollY;
 
         if (scrollPosition >= section1Bottom) {
-            // Fix canvas-container and sidebar after section-1
             canvasContainer.classList.add('fixed');
             sidebar.classList.add('fixed');
         } else {
-            // Reset to normal when scrolling back up
             canvasContainer.classList.remove('fixed');
             sidebar.classList.remove('fixed');
         }
     }
 
-    // Listen for scrolling
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Run once to set the correct state on page load
-         
-        });
+    // Enhanced scroll listener with debouncing
+    let isTicking = false;
+    window.addEventListener('scroll', () => {
+        if (!isTicking) {
+            window.requestAnimationFrame(() => {
+                handleScroll();
+                isTicking = false;
+            });
+            isTicking = true;
+        }
+    });
+
+    // Initial call
+    handleScroll();
+});
+// Force ScrollTrigger to recalculate on load
+window.addEventListener('load', () => {
+  ScrollTrigger.refresh();
+  // Optional: Log to confirm it's ready
+  console.log("ScrollTrigger refreshed on load");
+});
+
+let hasScrolled = false;
+window.addEventListener('scroll', () => {
+  if (!hasScrolled) {
+    hasScrolled = true;
+    ScrollTrigger.refresh(); // Recalculate on first scroll
+  }
+}, { once: true }); // Runs only once
+    
 
         
     </script>
