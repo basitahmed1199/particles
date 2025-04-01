@@ -70,6 +70,7 @@ class SpineExperience {
   }
 
   
+  
   // Modify init method to initialize debug visualization
 init() {
   // Create scene
@@ -223,6 +224,8 @@ init() {
       }
     );
   }
+
+  
 
   createUnderwaterParticles() {
     const particleCount = 200;
