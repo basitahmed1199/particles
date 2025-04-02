@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>simUphish - Partners</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background video - you can reuse your existing video -->
+    <div class="video-container">
+        <video autoplay loop muted playsinline disablepictureinpicture>
+            <source src="line.mp4" type="video/mp4">
+        </video>
+    </div>
+    
+    <!-- Navigation -->
+    <!-- Navigation - Moved outside sections for persistent access -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-item nav-home">HOME</a>
+        
+        <!-- Solutions Dropdown -->
+        <div class="nav-item">
+            SOLUTIONS
+            <div class="dropdown">
+                <a href="solutions.html#simulated-phishing" class="dropdown-item">Simulated Phishing</a>
+                <a href="solutions.html#security-awareness" class="dropdown-item">Security Awareness</a>
+                <!-- <a href="solutions.html#domain-spoofing" class="dropdown-item">Domain Spoofing Scanner</a> -->
+               
+            </div>
+        </div>
+        
+        <!-- Resources Dropdown -->
+        <div class="nav-item">
+            RESOURCES
+            <div class="dropdown">
+                <a href="resources.html#definitions" class="dropdown-item">Definitions</a>
+                <a href="resources.html#guides" class="dropdown-item">Guides</a>
+                <a href="resources.html#free-tools" class="dropdown-item">Free Tools</a>
+                <a href="resources.html#content" class="dropdown-item">Content Library</a>
+                <a href="solutions.html#employee-training" class="dropdown-item">Employee Training Policy</a>
+            </div>
+        </div>
+        
+        <!-- Partners Link -->
+        <a href="partners.html" class="nav-item">PARTNERS</a>
+        
+        <!-- About Dropdown -->
+        <div class="nav-item">
+            ABOUT
+          
+        </div>
+        
+        <a href="contact.html" class="nav-item">CONTACT</a>
+    </nav>
+    
+    <!-- Partners Page Content -->
+    <div class="page-content">
+        <h1 class="page-title">Partner With Us</h1>
+        <p style="max-width: 800px; margin-bottom: 30px;">simUphish's Channel Partner Program is crafted to streamline every facet of offering security awareness training to your clients. Set up recurring campaigns, leverage machine learning to choose training and phishing content, and much more!</p>
+        
+        <div style="display: flex; gap: 20px; margin-bottom: 40px;">
+            <a href="#" class="btn">Download Partner Datasheet</a>
+            <a href="#" class="btn btn-outline">Register Interest</a>
+        </div>
+        
+        <h2 style="color: #4f9cff; margin-bottom: 20px;">Channel Partner Program Levels</h2>
+        
+        <table class="partner-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Starter</th>
+                    <th>Premium</th>
+                    <th>Professional</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td># Customers Employees</td>
+                    <td>100-500</td>
+                    <td>501-3000</td>
+                    <td>3001+</td>
+                </tr>
+                <tr>
+                    <td>Aggregate Discount</td>
+                    <td>10%</td>
+                    <td>20%</td>
+                    <td>30%</td>
+                </tr>
+                <tr>
+                    <td>Technical Support</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>Sales Support</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>Customer Management Dashboard</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>Platform White-Labelling</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>Platform Maintenance & Roadmap</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div style="margin-top: 50px; background: rgba(79, 156, 255, 0.1); padding: 30px; border-radius: 10px;">
+            <h3 style="color: #4f9cff; margin-bottom: 15px;">Partner Benefits</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                <div>
+                    <h4 style="color: #00ffaa; margin-bottom: 10px;">Affordability</h4>
+                    <p>Our pricing and commercial package stand out as the most cost-effective solution globally. This ensures significant profitability when collaborating as partners.</p>
+                </div>
+                <div>
+                    <h4 style="color: #00ffaa; margin-bottom: 10px;">Easy To Use</h4>
+                    <p>Provide a user-friendly cloud-based product that seamlessly complements your existing offerings and is straightforward to grasp and market.</p>
+                </div>
+                <div>
+                    <h4 style="color: #00ffaa; margin-bottom: 10px;">White-labelled Platform</h4>
+                    <p>Utilize your own domain, logos, and banners, while also concealing any mention of simUphish.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts - include the same ones as your index.html -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        // Simple animation for page elements
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.from('.page-title', {
+                opacity: 0,
+                y: -50,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+            
+            gsap.from('.partner-table', {
+                opacity: 0,
+                y: 50,
+                duration: 0.8,
+                delay: 0.3,
+                ease: "power2.out"
+            });
+            
+            gsap.from('.btn', {
+                opacity: 0,
+                y: 20,
+                duration: 0.5,
+                delay: 0.5,
+                stagger: 0.1,
+                ease: "power2.out"
+            });
+        });
+    </script>
+</body>
+</html>
