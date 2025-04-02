@@ -6,8 +6,170 @@
     <title>simUphish - Partners</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
    <link rel="stylesheet" href="style.css">
+   <style>
+    /* Main styles that should match your index.html */
+    body {
+        font-family: 'JetBrains Mono', monospace;
+        background-color: #050510;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Navigation styles */
+    .navbar {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        background: rgba(20, 20, 30, 0.4);
+        backdrop-filter: blur(10px);
+        border-radius: 50px;
+        padding: 10px 20px;
+        border: 1px solid rgba(100, 100, 255, 0.2);
+        box-shadow: 0 0 20px rgba(100, 100, 255, 0.1);
+        z-index: 6000;
+    }
+    
+    .nav-item {
+        position: relative;
+        padding: 10px 20px;
+        color: #fff;
+        text-decoration: none;
+        font-size: 14px;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .nav-item:hover {
+        color: #4f9cff;
+    }
+    
+    .nav-item:before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 1px;
+        bottom: 5px;
+        left: 20px;
+        background: linear-gradient(90deg, rgba(100, 100, 255, 0), rgba(100, 100, 255, 1));
+        transition: width 0.3s ease;
+    }
+    
+    .nav-item:hover:before {
+        width: calc(100% - 40px);
+    }
+    
+    /* Page content styles */
+    .page-content {
+        position: relative;
+        z-index: 10;
+        padding: 120px 10% 80px;
+        color: white;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .page-title {
+        font-size: 3rem;
+        margin-bottom: 40px;
+        background: linear-gradient(to right, #ffffff, #8c2ee5);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+    }
+    
+    /* Partner table styles */
+    .partner-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 40px;
+        background: rgba(20, 20, 30, 0.4);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .partner-table th, .partner-table td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid rgba(100, 100, 255, 0.1);
+    }
+    
+    .partner-table th {
+        background: rgba(79, 156, 255, 0.1);
+        color: #4f9cff;
+        font-weight: 500;
+    }
+    
+    .partner-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .partner-table tr:hover {
+        background: rgba(100, 100, 255, 0.05);
+    }
+    
+    /* Button styles */
+    .btn {
+        display: inline-block;
+        padding: 12px 30px;
+        background: linear-gradient(45deg, #4f9cff, #00ffaa);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(79, 156, 255, 0.3);
+    }
+    
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(79, 156, 255, 0.4);
+    }
+    
+    .btn-outline {
+        background: transparent;
+        border: 1px solid #4f9cff;
+        color: #4f9cff;
+        box-shadow: none;
+    }
+    
+    .btn-outline:hover {
+        background: rgba(79, 156, 255, 0.1);
+    }
+    
+    /* Background video/effects - adjust as needed */
+    .video-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -1;
+    }
+    
+    .video-container video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
 </head>
+
 <body>
+       <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="loading-bar-container">
+            <div class="loading-progress"></div>
+        </div>
+        <div class="loading-text">Loading Experience...</div>
+    </div>
     <!-- Background video - you can reuse your existing video -->
     <div class="video-container">
         <video autoplay loop muted playsinline disablepictureinpicture>
@@ -124,7 +286,7 @@
         
         <div style="margin-top: 50px; background: rgba(79, 156, 255, 0.1); padding: 30px; border-radius: 10px;">
             <h3 style="color: #4f9cff; margin-bottom: 15px;">Partner Benefits</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
                 <div>
                     <h4 style="color: #00ffaa; margin-bottom: 10px;">Affordability</h4>
                     <p>Our pricing and commercial package stand out as the most cost-effective solution globally. This ensures significant profitability when collaborating as partners.</p>
@@ -137,6 +299,17 @@
                     <h4 style="color: #00ffaa; margin-bottom: 10px;">White-labelled Platform</h4>
                     <p>Utilize your own domain, logos, and banners, while also concealing any mention of simUphish.</p>
                 </div>
+                <div>
+                    <h4 style="color: #00ffaa; margin-bottom: 10px;">Technical Support</h4>
+                    <p>Our support is available via live chat, email, or video-chat to partners and customers alike.</p>
+                </div>
+                <div>
+                    <h4 style="color: #00ffaa; margin-bottom: 10px;">Managed Phishing Libraries</h4>
+                    <p>Select from a phishing library featuring emails, websites, and sender profiles themed for both local and global contexts.</p>
+                </div> <div>
+                    <h4 style="color: #00ffaa; margin-bottom: 10px;">Sales Support</h4>
+                    <p>Our team is eager to assist in closing deals, whether through demos, opportunity calls, or responding to RFPs.                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -146,29 +319,26 @@
     <script>
         // Simple animation for page elements
         document.addEventListener('DOMContentLoaded', () => {
-            gsap.from('.page-title', {
-                opacity: 0,
-                y: -50,
-                duration: 0.8,
-                ease: "power2.out"
-            });
+             // Simulate loading for demo
+             const loadingScreen = document.querySelector('.loading-screen');
+            const progress = document.querySelector('.loading-progress');
             
-            gsap.from('.partner-table', {
-                opacity: 0,
-                y: 50,
-                duration: 0.8,
-                delay: 0.3,
-                ease: "power2.out"
-            });
-            
-            gsap.from('.btn', {
-                opacity: 0,
-                y: 20,
-                duration: 0.5,
-                delay: 0.5,
-                stagger: 0.1,
-                ease: "power2.out"
-            });
+            let width = 0;
+            const interval = setInterval(() => {
+                width += Math.random() * 10;
+                if (width > 100) width = 100;
+                progress.style.width = width + '%';
+                
+                if (width === 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingScreen.style.opacity = 0;
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                        }, 1000);
+                    }, 500);
+                }
+            }, 200);
         });
     </script>
 </body>

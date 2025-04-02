@@ -202,7 +202,7 @@ overflow: visible; /* Prevents layout shifts */
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    transition: opacity 1s ease;
+    transition: opacity 0.7s ease;
 }
 
 .loading-bar-container {
@@ -372,7 +372,6 @@ animation: scrollBounce 2s infinite;
 50% { top: 20px; opacity: 0.5; }
 100% { top: 8px; opacity: 1; }
 }
-        
         
         /* Enhanced Navigation */
         .navbar {
