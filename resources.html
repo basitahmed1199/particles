@@ -1,185 +1,344 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>simUphish - Partners</title>
+    <title>Cybersecurity Resources | simUphish</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-   <link rel="stylesheet" href="style.css">
-   <style>
-    /* Main styles that should match your index.html */
-    body {
-        font-family: 'JetBrains Mono', monospace;
-        background-color: #050510;
-        color: #fff;
-        margin: 0;
-        padding: 0;
-    }
-    
-    /* Navigation styles */
-    .navbar {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        display: flex;
-        background: rgba(20, 20, 30, 0.4);
-        backdrop-filter: blur(10px);
-        border-radius: 50px;
-        padding: 10px 20px;
-        border: 1px solid rgba(100, 100, 255, 0.2);
-        box-shadow: 0 0 20px rgba(100, 100, 255, 0.1);
-        z-index: 6000;
-    }
-    
-    .nav-item {
-        position: relative;
-        padding: 10px 20px;
-        color: #fff;
-        text-decoration: none;
-        font-size: 14px;
-        letter-spacing: 1px;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    
-    .nav-item:hover {
-        color: #4f9cff;
-    }
-    
-    .nav-item:before {
-        content: "";
-        position: absolute;
-        width: 0;
-        height: 1px;
-        bottom: 5px;
-        left: 20px;
-        background: linear-gradient(90deg, rgba(100, 100, 255, 0), rgba(100, 100, 255, 1));
-        transition: width 0.3s ease;
-    }
-    
-    .nav-item:hover:before {
-        width: calc(100% - 40px);
-    }
-    
-    /* Page content styles */
-    .page-content {
-        position: relative;
-        z-index: 10;
-        padding: 120px 10% 80px;
-        color: white;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    
-    .page-title {
-        font-size: 3rem;
-        margin-bottom: 40px;
-        background: linear-gradient(to right, #ffffff, #8c2ee5);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        display: inline-block;
-    }
-    
-    /* Partner table styles */
-    .partner-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 40px;
-        background: rgba(20, 20, 30, 0.4);
-        backdrop-filter: blur(10px);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-    
-    .partner-table th, .partner-table td {
-        padding: 15px;
-        text-align: left;
-        border-bottom: 1px solid rgba(100, 100, 255, 0.1);
-    }
-    
-    .partner-table th {
-        background: rgba(79, 156, 255, 0.1);
-        color: #4f9cff;
-        font-weight: 500;
-    }
-    
-    .partner-table tr:last-child td {
-        border-bottom: none;
-    }
-    
-    .partner-table tr:hover {
-        background: rgba(100, 100, 255, 0.05);
-    }
-    
-    /* Button styles */
-    .btn {
-        display: inline-block;
-        padding: 12px 30px;
-        background: linear-gradient(45deg, #4f9cff, #00ffaa);
-        color: white;
-        border: none;
-        border-radius: 50px;
-        font-size: 14px;
-        font-weight: 500;
-        text-decoration: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(79, 156, 255, 0.3);
-    }
-    
-    .btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(79, 156, 255, 0.4);
-    }
-    
-    .btn-outline {
-        background: transparent;
-        border: 1px solid #4f9cff;
-        color: #4f9cff;
-        box-shadow: none;
-    }
-    
-    .btn-outline:hover {
-        background: rgba(79, 156, 255, 0.1);
-    }
-    
-    /* Background video/effects - adjust as needed */
-    .video-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        z-index: -1;
-    }
-    
-    .video-container video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-</style>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        /* Resources Page Specific Styles */
+        .resources-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 120px 5% 80px;
+        }
+        
+        .resources-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+        
+        .resources-content {
+            flex-grow: 1;
+            max-width: 800px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+        
+        .sidebar-title {
+            color: #4f9cff;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(100, 100, 255, 0.2);
+        }
+        
+        .sidebar-link {
+            display: block;
+            padding: 10px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .sidebar-link:hover, .sidebar-link.active {
+            background: rgba(100, 100, 255, 0.1);
+            color: #fff;
+        }
+        
+        .sidebar-link:before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-link:hover:before, .sidebar-link.active:before {
+            opacity: 1;
+            left: 5px;
+        }
+        
+        .resource-section {
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(100, 100, 255, 0.2);
+        }
+        
+        .resource-section h2 {
+            color: #4f9cff;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .resource-section h3 {
+            color: #00ffaa;
+            margin: 25px 0 15px;
+            font-size: 20px;
+        }
+        
+        .resource-item {
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+       /* DNS Checker Specific Styles */
+       .spoof-checker {
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.8), rgba(10, 10, 20, 0.9));
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .checker-form {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .checker-input {
+            flex-grow: 1;
+            min-width: 200px;
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px solid rgba(100, 100, 255, 0.2);
+            padding: 12px 20px;
+            border-radius: 50px;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .checker-button {
+            background: linear-gradient(45deg, #4f9cff, #00ffaa);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .checker-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 156, 255, 0.4);
+        }
+        
+        .checker-button:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .checker-results {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .result-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .result-item:before {
+            content: "";
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .result-item.safe {
+            background: rgba(0, 255, 170, 0.1);
+        }
+        
+        .result-item.safe:before {
+            background: #00ffaa;
+        }
+        
+        .result-item.warning {
+            background: rgba(255, 200, 0, 0.1);
+        }
+        
+        .result-item.warning:before {
+            background: #ffc800;
+        }
+        
+        .result-item.danger {
+            background: rgba(255, 50, 50, 0.1);
+        }
+        
+        .result-item.danger:before {
+            background: #ff3232;
+        }
+        
+        .result-item.info {
+            background: rgba(79, 156, 255, 0.1);
+        }
+        
+        .result-item.info:before {
+            background: #4f9cff;
+        }
+        
+        .dns-record {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin: 3px 0;
+            word-break: break-all;
+        }
+        
+        .loading-dots {
+            display: inline-block;
+            margin-left: 5px;
+        }
+        
+        .loading-dots span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: white;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        
+        .loading-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        
+        .loading-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .spoof-checker {
+                padding: 20px;
+            }
+            
+            .checker-form {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .checker-button {
+                width: 100%;
+            }
+        }
+        
+        .faq-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(100, 100, 255, 0.1);
+            padding-bottom: 15px;
+        }
+        
+        .faq-question {
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 10px 0;
+            position: relative;
+        }
+        
+        .faq-question:after {
+            content: "+";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #4f9cff;
+        }
+        
+        .faq-question.active:after {
+            content: "-";
+        }
+        
+        .faq-answer {
+            display: none;
+            padding: 10px 0;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(100, 100, 255, 0.1);
+        }
+        
+        .comparison-table th {
+            background: rgba(79, 156, 255, 0.1);
+            color: #4f9cff;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        @media (max-width: 900px) {
+            .resources-container {
+                flex-direction: column;
+            }
+            
+            .resources-sidebar {
+                width: 100%;
+                position: static;
+            }
+        }
+    </style>
 </head>
-
 <body>
-       <!-- Loading Screen -->
+    <!-- Loading Screen -->
     <div class="loading-screen">
         <div class="loading-bar-container">
             <div class="loading-progress"></div>
         </div>
         <div class="loading-text">Loading Experience...</div>
     </div>
-    <!-- Background video - you can reuse your existing video -->
-    <div class="video-container">
-        <video autoplay loop muted playsinline disablepictureinpicture>
-            <source src="line.mp4" type="video/mp4">
-        </video>
-    </div>
-    
+
     <!-- Navigation -->
-    <!-- Navigation - Moved outside sections for persistent access -->
     <nav class="navbar">
         <a href="index.html" class="nav-item nav-home">HOME</a>
         
@@ -187,8 +346,8 @@
         <div class="nav-item">
             SOLUTIONS
             <div class="dropdown">
-                <a href="solutions.html#simulated-phishing" class="dropdown-item">Simulated Phishing</a>
-                <a href="solutions.html#security-awareness" class="dropdown-item">Security Awareness</a>
+                <a href="simulated-phishing.html" class="dropdown-item">Simulated Phishing</a>
+                <a href="security-awareness.html" class="dropdown-item">Security Awareness</a>
                 <!-- <a href="solutions.html#domain-spoofing" class="dropdown-item">Domain Spoofing Scanner</a> -->
                
             </div>
@@ -201,8 +360,7 @@
                 <a href="resources.html#definitions" class="dropdown-item">Definitions</a>
                 <a href="resources.html#guides" class="dropdown-item">Guides</a>
                 <a href="resources.html#free-tools" class="dropdown-item">Free Tools</a>
-                <a href="resources.html#content" class="dropdown-item">Content Library</a>
-                <a href="solutions.html#employee-training" class="dropdown-item">Employee Training Policy</a>
+                <a href="resources.html#training" class="dropdown-item">Training</a>
             </div>
         </div>
         
@@ -217,73 +375,659 @@
         
         <a href="contact.html" class="nav-item">CONTACT</a>
     </nav>
-    
-   <!-- Resources Page -->
-<div id="resources-page" class="page-content" >
-    <h1 class="page-title">Cybersecurity Resources</h1>
-    
-    <div class="section-grid">
-        <div class="section-card" id="definitions">
-            <h3>Definitions</h3>
-            <p>Learn about various cybersecurity threats including Vishing, Smishing, Malvertising, and more.</p>
-            <ul style="margin-top: 10px; padding-left: 20px;">
-                <li>What is Vishing?</li>
-                <li>What is Smishing?</li>
-                <li>What is Malvertising?</li>
-                <li>What is Phishing Simulation?</li>
-            </ul>
+
+    <!-- Background video -->
+    <div class="video-container">
+        <video autoplay loop muted playsinline disablepictureinpicture>
+            <source src="line.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Main Content -->
+    <div class="resources-container">
+        <!-- Sidebar Navigation -->
+        <div class="resources-sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">FREE TOOLS</div>
+                <a href="#spoof-checker" class="sidebar-link">Domain Spoofing Scanner</a>
+                <a href="#employee-policy" class="sidebar-link">Employee Training Policy</a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">DEFINITIONS</div>
+                <a href="#what-is-phishing" class="sidebar-link">What is Phishing?</a>
+                <a href="#what-is-vishing" class="sidebar-link">What is Vishing?</a>
+                <a href="#what-is-smishing" class="sidebar-link">What is Smishing?</a>
+                <a href="#what-is-malvertising" class="sidebar-link">What is Malvertising?</a>
+                <a href="#what-is-simulation" class="sidebar-link">What is Phishing Simulation?</a>
+                <a href="#executive-phishing" class="sidebar-link">What is Executive Phishing?</a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">GUIDES</div>
+                <a href="#phishing-training" class="sidebar-link">Phishing Awareness Training</a>
+                <a href="#running-campaign" class="sidebar-link">Running A Phishing Campaign</a>
+                <a href="#open-source-comparison" class="sidebar-link">Open Source Phishing Comparison</a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">TRAINING</div>
+                <a href="#training-elements" class="sidebar-link">Training Elements</a>
+                <a href="#developing-program" class="sidebar-link">Developing a Program</a>
+                <a href="#simulate-scenarios" class="sidebar-link">Simulate Real-World Scenarios</a>
+            </div>
         </div>
         
-        <div class="section-card" id="guides">
-            <h3>Guides</h3>
-            <p>Practical guides to help you implement effective cybersecurity measures in your organization.</p>
-            <ul style="margin-top: 10px; padding-left: 20px;">
-                <li>Phishing Awareness Training</li>
-                <li>Running a Phishing Campaign</li>
-                <li>Open Source Phishing Comparison</li>
-            </ul>
-        </div>
+        <!-- Main Content Area -->
+        <div class="resources-content">
+            <!-- Spoof Checker Tool -->
+            <div id="spoof-checker" class="spoof-checker">
+                <h1 class="page-title">Domain Spoofing Scanner</h1>
         
-        <div class="section-card" id="free-tools">
-            <h3>Free Tools</h3>
-            <p>Access our collection of free cybersecurity tools designed for businesses of all sizes.</p>
-            <a href="#" class="btn" style="margin-top: 15px;">Domain Spoofing Scanner</a>
-        </div>
-        
-        <div class="section-card" id="content">
-            <h3>Content Library</h3>
-            <p>Downloadable resources including training materials, policy templates, and awareness content.</p>
+                <div class="spoof-checker">
+                    <p>Check if your domain is being spoofed by attackers to launch phishing campaigns. This tool checks DNS records, email security configurations, and known phishing databases.</p>
+                    
+                    <div class="checker-form" style="margin-top: 20px;">
+                        <input type="text" class="checker-input" placeholder="Enter your domain (e.g., yourcompany.com)" id="domain-input">
+                        <button class="checker-button" id="check-button">Scan Domain</button>
+                    </div>
+                    
+                    <div class="checker-results" id="checker-results">
+                        <h3>Scan Results for <span id="result-domain">example.com</span></h3>
+                        <div id="results-container">
+                            <!-- Results will be populated here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="resource-section">
+                    <h2>About Domain Spoofing</h2>
+                    <p>Domain spoofing is when attackers create fake domains that resemble legitimate ones to trick users. Common techniques include:</p>
+                    <ul>
+                        <li><strong>Homograph attacks:</strong> Using similar-looking characters (e.g., "goog1e.com")</li>
+                        <li><strong>Subdomain spoofing:</strong> Creating "yourcompany.phishingsite.com"</li>
+                        <li><strong>Typosquatting:</strong> Registering common misspellings</li>
+                    </ul>
+                    <p>Our scanner checks for these threats by analyzing DNS records, SPF/DKIM/DMARC configurations, and known phishing databases.</p>
+                </div>
+            </div>
+            
+            <!-- Free Tools Section -->
+            <div id="employee-policy" class="resource-section">
+                <h2>Employee Training Policy</h2>
+                <p>Download our customizable employee training policy template to ensure your organization meets compliance requirements and maintains a strong security posture.</p>
+                <a href="#" class="btn" style="margin-top: 15px;">Download Policy Template</a>
+            </div>
+            
+            <!-- Definitions Section -->
+            <div id="definitions" class="resource-section">
+                <h2>Cybersecurity Definitions</h2>
+                
+                <div id="what-is-phishing" class="resource-item">
+                    <div class="faq-item">
+                        <div class="faq-question">What is Phishing?</div>
+                        <div class="faq-answer">
+                            <p>Phishing is a cyber attack technique where attackers impersonate legitimate entities to trick individuals into revealing sensitive information such as login credentials, credit card numbers, or other personal data. These attacks typically occur through email, but can also happen via text messages (smishing) or phone calls (vishing).</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="what-is-vishing" class="resource-item">
+                    <div class="faq-item">
+                        <div class="faq-question">What is Vishing?</div>
+                        <div class="faq-answer">
+                            <p>Vishing (voice phishing) is a type of phishing attack conducted over phone calls. Attackers pretend to be from legitimate organizations like banks, government agencies, or tech support to trick victims into providing sensitive information or granting access to systems.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="what-is-smishing" class="resource-item">
+                    <div class="faq-item">
+                        <div class="faq-question">What is Smishing?</div>
+                        <div class="faq-answer">
+                            <p>Smishing (SMS phishing) is a phishing variant that uses text messages to trick recipients into clicking malicious links, downloading malware, or providing sensitive information. These messages often appear to come from trusted sources and create a sense of urgency.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="what-is-malvertising" class="resource-item">
+                    <div class="faq-item">
+                        <div class="faq-question">What is Malvertising?</div>
+                        <div class="faq-answer">
+                            <p>Malvertising (malicious advertising) is a cyber attack technique that leverages online advertising networks to distribute malware. Unlike traditional malware attacks that require user action, malvertising injects malicious code into legitimate ad networks, potentially infecting users who simply visit compromised websites.</p>
+                            <h3>How Do Cybercriminals Exploit Malvertising?</h3>
+                            <p>Attackers use several techniques:</p>
+                            <ul>
+                                <li>Infiltrating authentic advertisements with malicious code</li>
+                                <li>Creating entirely new malicious ads designed to evade detection</li>
+                                <li>Using sophisticated tactics to target specific user groups</li>
+                                <li>Exploiting vulnerabilities in the ad supply chain</li>
+                            </ul>
+                            
+                            <h3>Common Malvertising Attack Techniques:</h3>
+                            <ol>
+                                <li><strong>Exploit Kits:</strong> Target vulnerabilities in browsers/plugins</li>
+                                <li><strong>Phishing Ads:</strong> Redirect to fake sites to steal credentials</li>
+                                <li><strong>Drive-by Downloads:</strong> Automatically download malware</li>
+                                <li><strong>Forced Redirects:</strong> Send users to malicious sites</li>
+                                <li><strong>Cryptojacking Scripts:</strong> Mine cryptocurrency without consent</li>
+                                <li><strong>Scareware:</strong> Fake warnings to install malware</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="what-is-simulation" class="resource-item">
+                    <div class="faq-item">
+                        <div class="faq-question">What is a Phishing Simulation?</div>
+                        <div class="faq-answer">
+                            <p>A phishing simulation is a controlled exercise where organizations send mock phishing emails to employees to test their ability to recognize and respond to phishing attempts. These simulations help identify vulnerabilities in employee awareness and measure the effectiveness of security training programs.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="executive-phishing" class="resource-item">
+                    <div class="faq-item">
+                        <div class="faq-question">What is Executive Phishing?</div>
+                        <div class="faq-answer">
+                            <p>Executive phishing (also called CEO fraud or whaling) targets high-level executives with sophisticated phishing attacks. These often involve impersonating the CEO or other executives to trick employees into transferring money or sharing sensitive company information.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Guides Section -->
+            <div id="guides" class="resource-section">
+                <h2>Guides & Best Practices</h2>
+                
+                <div id="phishing-training" class="resource-item">
+                    <h3>Phishing Awareness Training</h3>
+                    <p>Investing in phishing awareness training is essential to safeguarding your workforce and fulfilling regulatory requirements. Take proactive steps to educate your employees through accessible, dynamic, and interactive training sessions.</p>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">What Is Phishing Awareness Training?</div>
+                        <div class="faq-answer">
+                            <p>Phishing awareness training is an educational program designed to teach individuals how to recognize and respond to phishing attempts effectively. It typically involves simulated phishing attacks, interactive modules, and educational resources to help employees understand the tactics used by cybercriminals and how to avoid falling victim to them.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">What Are The Elements of Phishing Awareness Training?</div>
+                        <div class="faq-answer">
+                            <p>The elements of effective phishing awareness training include:</p>
+                            <ol>
+                                <li><strong>Interactive Modules:</strong> Covering identification of phishing emails and malicious links</li>
+                                <li><strong>Simulated Phishing Campaigns:</strong> Realistic tests of employee awareness</li>
+                                <li><strong>Real-life Examples:</strong> Case studies of actual phishing attempts</li>
+                                <li><strong>Best Practices:</strong> Guidelines for handling suspicious communications</li>
+                                <li><strong>Reporting Procedures:</strong> Clear instructions for reporting threats</li>
+                                <li><strong>Ongoing Education:</strong> Regular updates about new phishing tactics</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="running-campaign" class="resource-item">
+                    <h3>Running A Phishing Campaign</h3>
+                    <p>Learn how to effectively plan, execute, and analyze phishing simulation campaigns to improve your organization's security posture.</p>
+                    <a href="#" class="btn" style="margin-top: 15px;">Download Guide</a>
+                </div>
+                
+                <div id="open-source-comparison" class="resource-item">
+                    <h3>Comparing Open-Source Phishing Tools to Professional Solutions</h3>
+                    <p>Learn how open-source phishing tools stack up against their professional counterparts.</p>
+                    
+                    <h4>What You'll Learn In This Guide:</h4>
+                    <ul>
+                        <li>Benefits of open-source phishing tools</li>
+                        <li>Limitations of open-source solutions</li>
+                        <li>Comparison with paid professional tools</li>
+                        <li>True cost of ownership considerations</li>
+                        <li>How simUphish offers a better alternative</li>
+                    </ul>
+                    
+                    <h4>What Are Open-Source Phishing Tools?</h4>
+                    <p>Open-source phishing tools are software applications or frameworks developed and distributed under an open-source license, allowing users to access, modify, and distribute the source code freely. These tools are typically available for free and are maintained by communities of developers.</p>
+                    
+                    <h4>Benefits of Open-Source Phishing Tools</h4>
+                    <table class="comparison-table">
+                        <tr>
+                            <th>Benefit</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td>Cost-effectiveness</td>
+                            <td>Available for free, making them accessible to organizations with limited budgets</td>
+                        </tr>
+                        <tr>
+                            <td>Customization</td>
+                            <td>Users can modify the source code to suit specific needs</td>
+                        </tr>
+                        <tr>
+                            <td>Transparency</td>
+                            <td>Source code is available for security inspection</td>
+                        </tr>
+                        <tr>
+                            <td>Community support</td>
+                            <td>Active communities contribute to improvement</td>
+                        </tr>
+                    </table>
+                    
+                    <h4>Limitations Of Open-Source Phishing Tools</h4>
+                    <table class="comparison-table">
+                        <tr>
+                            <th>Limitation</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td>Limited features</td>
+                            <td>May lack advanced functionalities of paid solutions</td>
+                        </tr>
+                        <tr>
+                            <td>Support challenges</td>
+                            <td>Documentation and support may be inconsistent</td>
+                        </tr>
+                        <tr>
+                            <td>Security risks</td>
+                            <td>Public source code may expose vulnerabilities</td>
+                        </tr>
+                        <tr>
+                            <td>Complexity</td>
+                            <td>Often require technical expertise to implement</td>
+                        </tr>
+                    </table>
+                    
+                    <a href="#" class="btn" style="margin-top: 20px;">Download Full Comparison</a>
+                </div>
+            </div>
+            
+            <!-- Training Section -->
+            <div id="training" class="resource-section">
+                <h2>Training Resources</h2>
+                
+                <div id="training-elements" class="resource-item">
+                    <h3>Essential Training Elements</h3>
+                    <p>Develop a comprehensive security awareness training program with these key components:</p>
+                    <ul>
+                        <li>Interactive learning modules</li>
+                        <li>Real-world scenario simulations</li>
+                        <li>Regular knowledge assessments</li>
+                        <li>Engaging multimedia content</li>
+                        <li>Personalized learning paths</li>
+                    </ul>
+                </div>
+                
+                <div id="developing-program" class="resource-item">
+                    <h3>Developing a Comprehensive Training Program</h3>
+                    <p>Create an impactful phishing awareness training program at no cost with these strategies:</p>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">Simulate Real-World Scenarios</div>
+                        <div class="faq-answer">
+                            <p>An essential component involves replicating genuine phishing attacks. Through these simulated scenarios, employees experience controlled environments that mirror real-life cyber threats. This exposure equips them with the knowledge and skills to recognize and address actual phishing attempts, ultimately bolstering their cybersecurity readiness.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">Customize Your Training</div>
+                        <div class="faq-answer">
+                            <p>Adapt phishing programs to suit employees across various industries. For instance, individuals in financial services may encounter distinct risks compared to those in government roles. By customizing training, employees can gain insights into identifying and addressing risks specific to their industry.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">Conduct Periodic Training</div>
+                        <div class="faq-answer">
+                            <p>Consistency is paramount for successful phishing awareness training. Regular updates and ongoing reinforcement are essential to sustain employees' alertness and knowledge, enabling them to identify and thwart evolving phishing tactics effectively.</p>
+                            <p>Several compliance frameworks mandate routine training including:</p>
+                            <ul>
+                                <li>NIST 800-171</li>
+                                <li>NIST 800-53</li>
+                                <li>Cybersecurity Maturity Model Certification</li>
+                                <li>ISO27001</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="simulate-scenarios" class="resource-item">
+                    <h3>simUphish's Phishing Tools</h3>
+                    <p>simUphish is committed to making cybersecurity training accessible through its perpetual free tier, which provides robust tools for phishing awareness training.</p>
+                    
+                    <h4>Key Features:</h4>
+                    <ul>
+                        <li><strong>Phishing Simulator:</strong> Highly realistic simulations using actual threat tactics</li>
+                        <li><strong>Security Awareness Training:</strong> Comprehensive educational modules</li>
+                        <li><strong>Reporting Tools:</strong> Detailed analytics and progress tracking</li>
+                    </ul>
+                    
+                    <a href="#" class="btn" style="margin-top: 15px;">Explore Training Tools</a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-
-    <!-- Scripts - include the same ones as your index.html -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script>
-        // Simple animation for page elements
+        // Register ScrollTrigger plugin
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Loading animation
         document.addEventListener('DOMContentLoaded', () => {
-             // Simulate loading for demo
-             const loadingScreen = document.querySelector('.loading-screen');
-            const progress = document.querySelector('.loading-progress');
+            const loadingProgress = document.querySelector('.loading-progress');
+            const loadingScreen = document.querySelector('.loading-screen');
             
-            let width = 0;
-            const interval = setInterval(() => {
-                width += Math.random() * 10;
-                if (width > 100) width = 100;
-                progress.style.width = width + '%';
-                
-                if (width === 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        loadingScreen.style.opacity = 0;
-                        setTimeout(() => {
-                            loadingScreen.style.display = 'none';
-                        }, 1000);
-                    }, 500);
+            gsap.to(loadingProgress, {
+                width: "100%",
+                duration: 2,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    gsap.to(loadingScreen, {
+                        opacity: 0,
+                        duration: 0.5,
+                        ease: "power2.out",
+                        onComplete: () => {
+                            loadingScreen.style.display = "none";
+                            initPage();
+                            initScanner();
+                        }
+                    });
                 }
-            }, 200);
+            });
         });
+
+         
+    function initPage() {
+        // Animate resource items on scroll
+        gsap.utils.toArray(".resource-item").forEach(item => {
+            gsap.to(item, {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                scrollTrigger: {
+                    trigger: item,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                }
+            });
+        });
+        
+        // FAQ toggle functionality
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const isActive = question.classList.contains('active');
+                
+                // Close all other FAQs
+                faqQuestions.forEach(q => {
+                    if (q !== question) {
+                        q.classList.remove('active');
+                        q.nextElementSibling.style.display = 'none';
+                    }
+                });
+                
+                // Toggle current FAQ
+                if (isActive) {
+                    question.classList.remove('active');
+                    gsap.to(answer, {
+                        height: 0,
+                        opacity: 0,
+                        duration: 0.3,
+                        onComplete: () => {
+                            answer.style.display = 'none';
+                        }
+                    });
+                } else {
+                    question.classList.add('active');
+                    answer.style.display = 'block';
+                    gsap.from(answer, {
+                        height: 0,
+                        opacity: 0,
+                        duration: 0.3
+                    });
+                }
+            });
+        });
+        
+        // Update active sidebar link based on scroll position
+        const sections = document.querySelectorAll('.resource-section, .spoof-checker');
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        
+        function updateActiveLink() {
+            let currentSection = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.scrollY >= sectionTop - 200) {
+                    currentSection = '#' + section.id;
+                }
+            });
+            
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', updateActiveLink);
+        updateActiveLink();
+    }
+        
+        // DNS Checker Functionality
+        function initScanner() {
+            const checkButton = document.getElementById('check-button');
+            const domainInput = document.getElementById('domain-input');
+            const resultsContainer = document.getElementById('results-container');
+            const resultDomain = document.getElementById('result-domain');
+            const checkerResults = document.getElementById('checker-results');
+            
+            // Function to create a loading indicator
+            function createLoadingDots() {
+                const span = document.createElement('span');
+                span.className = 'loading-dots';
+                span.innerHTML = '<span></span><span></span><span></span>';
+                return span;
+            }
+            
+            // Function to check domain using DNS API
+            async function checkDomain(domain) {
+                if (!domain) return;
+                
+                // Clear previous results
+                resultsContainer.innerHTML = '';
+                checkerResults.style.display = 'none';
+                
+                // Show loading state
+                checkButton.disabled = true;
+                checkButton.innerHTML = 'Scanning ';
+                checkButton.appendChild(createLoadingDots());
+                
+                try {
+                    // First validate the domain format
+                    if (!isValidDomain(domain)) {
+                        throw new Error('Please enter a valid domain name (e.g., example.com)');
+                    }
+                    
+                    // Set the domain in results
+                    resultDomain.textContent = domain;
+                    
+                    // Simulate API calls (replace with actual API calls)
+                    const results = await simulateAPICalls(domain);
+                    
+                    // Display results
+                    displayResults(results);
+                    
+                    // Show results section
+                    checkerResults.style.display = 'block';
+                    gsap.from(checkerResults, {
+                        opacity: 0,
+                        y: 20,
+                        duration: 0.5
+                    });
+                    
+                } catch (error) {
+                    // Show error
+                    const errorItem = document.createElement('div');
+                    errorItem.className = 'result-item danger';
+                    errorItem.innerHTML = `<strong>Error:</strong> ${error.message}`;
+                    resultsContainer.appendChild(errorItem);
+                    
+                    checkerResults.style.display = 'block';
+                } finally {
+                    // Reset button
+                    checkButton.disabled = false;
+                    checkButton.textContent = 'Scan Domain';
+                }
+            }
+            
+            // Domain validation
+            function isValidDomain(domain) {
+                // Simple domain validation regex
+                const pattern = /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i;
+                return pattern.test(domain);
+            }
+            
+            // Simulate API calls (replace with actual API implementations)
+            async function simulateAPICalls(domain) {
+                // In a real implementation, you would call actual DNS APIs here
+                // For example:
+                // const dnsRecords = await fetchDNSRecords(domain);
+                // const spfCheck = await checkSPF(domain);
+                // etc.
+                
+                // Simulating API delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Return mock data - replace with real API responses
+                return {
+                    dnsRecords: {
+                        A: ['192.0.2.1', '192.0.2.2'],
+                        MX: ['10 mail1.example.com', '20 mail2.example.com'],
+                        TXT: ['"v=spf1 include:_spf.example.com ~all"', '"google-site-verification=ABC123"'],
+                        NS: ['ns1.example.com', 'ns2.example.com']
+                    },
+                    security: {
+                        spf: true,
+                        dkim: true,
+                        dmarc: 'p=quarantine',
+                        dmarcPolicy: 'quarantine'
+                    },
+                    threats: {
+                        isSpoofed: false,
+                        similarDomains: ['examp1e.com', 'examplee.com'],
+                        phishingReports: 2,
+                        lastReported: '2023-05-15'
+                    }
+                };
+            }
+            
+            // Display results
+            function displayResults(data) {
+                resultsContainer.innerHTML = '';
+                
+                // DNS Records
+                const dnsItem = document.createElement('div');
+                dnsItem.className = 'result-item info';
+                dnsItem.innerHTML = '<strong>DNS Records:</strong> Found ' + 
+                    (Object.keys(data.dnsRecords).length + ' record types')
+                
+                const dnsDetails = document.createElement('div');
+                dnsDetails.style.marginTop = '10px';
+                
+                for (const [type, records] of Object.entries(data.dnsRecords)) {
+                    const typeHeader = document.createElement('div');
+                    typeHeader.textContent = type + ' Records:';
+                    typeHeader.style.fontWeight = '500';
+                    typeHeader.style.margin = '5px 0';
+                    dnsDetails.appendChild(typeHeader);
+                    
+                    records.forEach(record => {
+                        const recordEl = document.createElement('div');
+                        recordEl.className = 'dns-record';
+                        recordEl.textContent = record;
+                        dnsDetails.appendChild(recordEl);
+                    });
+                }
+                
+                dnsItem.appendChild(dnsDetails);
+                resultsContainer.appendChild(dnsItem);
+                
+                // Email Security
+                const securityStatus = data.security.spf && data.security.dkim ? 'safe' : 'warning';
+                const securityItem = document.createElement('div');
+                securityItem.className = `result-item ${securityStatus}`;
+                
+                let securityText = '<strong>Email Security:</strong> ';
+                if (data.security.spf && data.security.dkim) {
+                    securityText += 'SPF and DKIM properly configured. ';
+                } else {
+                    securityText += 'Missing or misconfigured: ';
+                    if (!data.security.spf) securityText += 'SPF ';
+                    if (!data.security.dkim) securityText += 'DKIM ';
+                }
+                
+                securityText += `DMARC policy set to ${data.security.dmarcPolicy}`;
+                securityItem.innerHTML = securityText;
+                resultsContainer.appendChild(securityItem);
+                
+                // Similar Domains
+                if (data.threats.similarDomains.length > 0) {
+                    const similarItem = document.createElement('div');
+                    similarItem.className = 'result-item warning';
+                    similarItem.innerHTML = `<strong>Similar Domains:</strong> ${data.threats.similarDomains.length} potentially spoofed domains detected`;
+                    
+                    const similarList = document.createElement('div');
+                    similarList.style.marginTop = '10px';
+                    data.threats.similarDomains.forEach(domain => {
+                        const domainEl = document.createElement('div');
+                        domainEl.className = 'dns-record';
+                        domainEl.textContent = domain;
+                        similarList.appendChild(domainEl);
+                    });
+                    
+                    similarItem.appendChild(similarList);
+                    resultsContainer.appendChild(similarItem);
+                }
+                
+                // Threat Intelligence
+                const threatStatus = data.threats.phishingReports > 0 ? 'danger' : 'safe';
+                const threatItem = document.createElement('div');
+                threatItem.className = `result-item ${threatStatus}`;
+                
+                let threatText = '<strong>Threat Intelligence:</strong> ';
+                if (data.threats.phishingReports > 0) {
+                    threatText += `${data.threats.phishingReports} phishing attempts detected`;
+                    if (data.threats.lastReported) {
+                        threatText += ` (last reported ${data.threats.lastReported})`;
+                    }
+                } else {
+                    threatText += 'No known phishing attempts detected';
+                }
+                
+                threatItem.innerHTML = threatText;
+                resultsContainer.appendChild(threatItem);
+            }
+            
+            // Event listeners
+            checkButton.addEventListener('click', () => {
+                const domain = domainInput.value.trim();
+                checkDomain(domain);
+            });
+            
+            domainInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const domain = domainInput.value.trim();
+                    checkDomain(domain);
+                }
+            });
+        }
+        
+       
+
+        
     </script>
+    
 </body>
 </html>
