@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Calculators | simUphish</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        /* Calculator Page Specific Styles */
+        .calculators-page {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .calculator-sidebar {
+            width: 250px;
+            background: rgba(10, 10, 20, 0.9);
+            padding: 30px 20px;
+            border-right: 1px solid rgba(100, 100, 255, 0.2);
+            position: sticky;
+            top: 0;
+        }
+
+        .calculator-sidebar h3 {
+            color: #4f9cff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .calculator-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .calculator-menu li {
+            margin-bottom: 10px;
+        }
+
+        .calculator-menu a {
+            display: block;
+            padding: 10px 15px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .calculator-menu a:hover,
+        .calculator-menu a.active {
+            background: rgba(100, 100, 255, 0.1);
+            color: #4f9cff;
+        }
+
+        .calculator-menu a:before {
+            content: ">";
+            margin-right: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .calculator-menu a:hover:before,
+        .calculator-menu a.active:before {
+            opacity: 1;
+        }
+
+        .calculator-content {
+            flex: 1;
+            padding: 40px;
+            padding-top: 120px;
+        }
+
+        .calculator-section {
+            margin-bottom: 60px;
+            padding: 30px;
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(100, 100, 255, 0.2);
+        }
+
+        .calculator-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #4f9cff;
+        }
+
+        .calculator-section h3 {
+            font-size: 1.4rem;
+            margin: 30px 0 15px;
+            color: #00ffaa;
+        }
+
+        .calculator-description {
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .calculator-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px solid rgba(100, 100, 255, 0.2);
+            border-radius: 5px;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .form-group input[type="range"] {
+            padding: 0;
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .calculator-result {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(79, 156, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #4f9cff;
+        }
+
+        .calculator-result h4 {
+            margin-top: 0;
+            color: #00ffaa;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(100, 100, 255, 0.1);
+        }
+
+        .comparison-table th {
+            background: rgba(79, 156, 255, 0.1);
+            color: #4f9cff;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .info-box {
+            padding: 15px;
+            background: rgba(0, 255, 170, 0.1);
+            border-radius: 5px;
+            border-left: 4px solid #00ffaa;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .calculators-page {
+                flex-direction: column;
+                padding-top: 100px;
+            }
+
+            .calculator-sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+            }
+
+            .calculator-menu {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+
+            .calculator-menu li {
+                margin-right: 10px;
+                margin-bottom: 0;
+                white-space: nowrap;
+            }
+
+            .calculator-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+   <!-- Navigation -->
+   <nav class="navbar">
+    <a href="index.html" class="nav-item nav-home">HOME</a>
+    
+    <!-- Solutions Dropdown -->
+    <div class="nav-item">
+        SOLUTIONS
+        <div class="dropdown">
+            <a href="simulated-phishing.html" class="dropdown-item">Simulated Phishing</a>
+            <a href="security-awareness.html" class="dropdown-item">Security Awareness</a>
+        </div>
+    </div>
+    
+    <!-- Resources Dropdown -->
+    <div class="nav-item">
+        RESOURCES
+        <div class="dropdown">
+            <a href="resources.html#definitions" class="dropdown-item">Definitions</a>
+            <a href="resources.html#guides" class="dropdown-item">Guides</a>
+            <a href="resources.html#free-tools" class="dropdown-item">Free Tools</a>
+            <a href="resources.html#training" class="dropdown-item">Training</a>
+        </div>
+    </div>
+    
+    <!-- Partners Link -->
+    <a href="partners.html" class="nav-item">PARTNERS</a>
+    
+    <!-- About Dropdown -->
+    <a href="about.html" class="nav-item">ABOUT</a>
+    
+    <a href="contact.html" class="nav-item">CONTACT</a>
+</nav>
+
+    <!-- Calculators Page Content -->
+    <div class="calculators-page">
+        <!-- Sidebar Navigation -->
+        <div class="calculator-sidebar">
+            <h3>Security Calculators</h3>
+            <ul class="calculator-menu">
+                <li><a href="#risk-calculator" class="active">Risk Calculator</a></li>
+                <li><a href="#impact-calculator">Impact Calculator</a></li>
+                <li><a href="#roi-calculator">ROI Calculator</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="calculator-content">
+            <!-- Risk Calculator -->
+            <section id="risk-calculator" class="calculator-section">
+                <h2>Risk Calculator</h2>
+                <h3>Evaluate Your Actual Phishing Risk</h3>
+                
+                <div class="calculator-description">
+                    <p>What value does a phishing test have if non-participation is counted as success? Focusing only on lowering failure rates provides an inaccurate view of your business risk profile. For an honest assessment, evaluate your true risk!</p>
+                    
+                    <h4>True Risk vs. Measured Risk: The Risky Difference</h4>
+                    <p>Assessing the true risk of a phishing attack breach is essential. Understanding the actual likelihood of your employees clicking on something they shouldn't—or reporting something they should—enables the CEO and the C-suite to make informed business and security decisions.</p>
+                </div>
+                
+                <div class="calculator-form">
+                    <div class="form-group">
+                        <label for="reporting-searches">Reporting Searches (%)</label>
+                        <input type="range" id="reporting-searches" min="0" max="100" value="25" step="5">
+                        <div class="range-labels">
+                            <span>0</span>
+                            <span>25</span>
+                            <span>50</span>
+                            <span>75</span>
+                            <span>100</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="failure-rate">Failure Rate (%)</label>
+                        <input type="range" id="failure-rate" min="0" max="100" value="10" step="5">
+                        <div class="range-labels">
+                            <span>0</span>
+                            <span>25</span>
+                            <span>50</span>
+                            <span>75</span>
+                            <span>100</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="type-risk">Type Risk Score</label>
+                        <input type="range" id="type-risk" min="0" max="100" value="75" step="5">
+                        <div class="range-labels">
+                            <span>0</span>
+                            <span>25</span>
+                            <span>50</span>
+                            <span>75</span>
+                            <span>100</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="calculator-result">
+                    <h4>True Risk Assessment</h4>
+                    <div id="risk-result">
+                        <p><strong>0-8 Score:</strong> A score in this range typically indicates low engagement in phishing services across the organization. To improve, emphasize positive reinforcement through feedback and recognition.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Impact Calculator -->
+            <section id="impact-calculator" class="calculator-section">
+                <h2>Impact Calculator</h2>
+                <h3>Discover The Impact Of Your Security Awareness Training</h3>
+                
+                <div class="calculator-description">
+                    <p>What impact is your security awareness training program having? What could it achieve with a new and improved approach that automates more frequent, personalized, and realistic training?</p>
+                    
+                    <h4>Traditional SAT programs are hindered by:</h4>
+                    <ul>
+                        <li><strong>Low engagement:</strong> Since training is only provided to those who fail, it reaches only a small percentage of users.</li>
+                        <li><strong>Misleading metrics:</strong> One-size-fits-all simulations are either too hard or too easy for most users.</li>
+                        <li><strong>Infrequent delivery:</strong> Creating and deploying simulations is time-consuming.</li>
+                    </ul>
+                </div>
+                
+                <div class="calculator-form">
+                    <div class="form-group">
+                        <label for="employees">Number of employees</label>
+                        <input type="number" id="employees" value="1000" min="10" step="10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="simulations">Simulations per year</label>
+                        <select id="simulations">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3" selected>3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="failure-rate-impact">Failure rate (%)</label>
+                        <input type="range" id="failure-rate-impact" min="0" max="100" value="35" step="5">
+                        <div class="range-labels">
+                            <span>0</span>
+                            <span>25</span>
+                            <span>50</span>
+                            <span>75</span>
+                            <span>100</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Traditional Training</th>
+                            <th>simUphish Training</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Training Rate</td>
+                            <td id="traditional-rate">5%</td>
+                            <td id="simuphish-rate">72%</td>
+                        </tr>
+                        <tr>
+                            <td>Training per year</td>
+                            <td id="traditional-total">50</td>
+                            <td id="simuphish-total">25,920</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="info-box">
+                    <p>Providing training only to those who have failed the simulation will result in a very low number of training sessions per year.</p>
+                </div>
+                
+                <div class="info-box" style="background: rgba(79, 156, 255, 0.1); border-left-color: #4f9cff;">
+                    <p>Automating and increasing the volume of simulations sent out per year, while offering training to all participants (both those who succeeded and those who failed), will significantly increase the number of training sessions annually.</p>
+                </div>
+            </section>
+
+            <!-- ROI Calculator -->
+            <section id="roi-calculator" class="calculator-section">
+                <h2>ROI Calculator</h2>
+                <h3>Calculate Your Savings by Choosing simUphish</h3>
+                
+                <div class="calculator-description">
+                    <p>Determining the return on investment (ROI) for a phishing training solution isn't an exact science. However, we can estimate the direct costs of a breach, which are more tangible.</p>
+                    <p>The key variable that simUphish directly impacts is the phishing penetration rate. By enabling organizations to run frequent, automated phishing campaigns, the penetration rate can be drastically reduced to just 2%, resulting in immense savings downstream.</p>
+                </div>
+                
+                <div class="calculator-form">
+                    <div class="form-group">
+                        <label for="employee-count">Number of employees with e-mail access</label>
+                        <input type="number" id="employee-count" value="2000" min="10" step="10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phishing-attacks">Monthly phishing attacks per employee</label>
+                        <input type="number" id="phishing-attacks" value="5" min="1" step="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="penetration-rate">Phishing penetration rate (%)</label>
+                        <input type="range" id="penetration-rate" min="0" max="100" value="25" step="1">
+                        <div class="range-labels">
+                            <span>0</span>
+                            <span>25</span>
+                            <span>50</span>
+                            <span>75</span>
+                            <span>100</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fte-count">Number of FTEs involved in breach remediation</label>
+                        <input type="number" id="fte-count" value="10" min="1" step="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hours-per-fte">Number of hours spent per FTE remedying one breach</label>
+                        <input type="number" id="hours-per-fte" value="100" min="1" step="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fte-cost">Cost of one FTE man hour for organization ($)</label>
+                        <input type="number" id="fte-cost" value="50" min="10" step="5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="employee-downtime">Hours a breached employee spends not producing value</label>
+                        <input type="number" id="employee-downtime" value="4" min="1" step="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="annual-revenue">Annual revenues of organization (in millions $)</label>
+                        <input type="number" id="annual-revenue" value="100" min="1" step="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="total-employees">Total employee count</label>
+                        <input type="number" id="total-employees" value="10000" min="10" step="10">
+                    </div>
+                </div>
+                
+                <div class="calculator-result">
+                    <h4>Annual Cost Savings</h4>
+                    <div id="roi-results">
+                        <p><strong>Internal Remediation Cost:</strong> $<span id="remediation-cost">0</span></p>
+                        <p><strong>Lost Productivity:</strong> $<span id="productivity-cost">0</span></p>
+                        <p><strong>Total Potential Savings:</strong> $<span id="total-savings">0</span></p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: rgba(10, 10, 20, 0.9); padding: 60px 10%; border-top: 1px solid rgba(100, 100, 255, 0.2);">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <div style="margin-bottom: 40px;">
+                <h2 style="color: #4f9cff; font-size: 2rem; margin-bottom: 10px;">simUphish</h2>
+                <p style="color: rgba(255,255,255,0.7); letter-spacing: 2px; margin-bottom: 5px;">DEFEND | EDUCATE | EMPOWER</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px;">
+                <!-- Solutions Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">SOLUTIONS</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="simulated-phishing.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Phishing Training</a></li>
+                        <li><a href="security-awareness.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Security Awareness Training</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Why simUphish Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">WHY SIMUPHISH?</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="security.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Security</a></li>
+                        <li style="margin-bottom: 10px;"><a href="calculators.html#risk-calculator" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">ROI Calculator</a></li>
+                        <li style="margin-bottom: 10px;"><a href="calculators.html#roi-calculator" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Risk Calculator</a></li>
+                        <li style="margin-bottom: 10px;"><a href="calculators.html#impact-calculator" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Impact Calculator</a></li>
+                       
+                    </ul>
+                </div>
+                
+               
+                
+                <!-- Company Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">COMPANY</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="about.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">About</a></li>
+                        <li style="margin-bottom: 10px;"><a href="partners.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Partners</a></li>
+                        <li style="margin-bottom: 10px;"><a href="contact.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Careers</a></li>
+                      
+                    </ul>
+                </div>
+                
+                <!-- Industries Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">RESOURCES</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="resources.html#definitions" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Definitions</a></li>
+                        <li style="margin-bottom: 10px;"><a href="resources.html#guides" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Guides</a></li>
+                        <li style="margin-bottom: 10px;"><a href="resources.html#free-tools" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Free Tools</a></li>
+                        <li style="margin-bottom: 10px;"><a href="resources.html#training" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Training</a></li>
+                       
+                    </ul>
+                </div>
+                
+                <!-- Newsletter Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">STAY IN THE LOOP</h3>
+                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">Want to receive news and updates?</p>
+                    <form style="display: flex; gap: 10px;">
+                        <input type="email" placeholder="Email" style="background: rgba(20,20,30,0.6); border: 1px solid rgba(100,100,255,0.2); padding: 12px 15px; border-radius: 50px; color: white; flex-grow: 1;">
+                        <button type="submit" style="background: linear-gradient(45deg, #4f9cff, #00ffaa); color: white; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer;">Subscribe</button>
+                    </form>
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <a href="https://www.facebook.com/simuphish/" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/facebook_5968764.png" alt=""></a>
+                        <a href="https://www.instagram.com/simuphish/" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/social_16033412.png" alt=""></a>
+                        <a href="https://www.pinterest.com/simuphish/" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/pinterest_11378604.png" alt=""></a>
+                        <a href="https://www.youtube.com/@simUphishofficial" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/youtube_4494485.png" alt=""></a>
+                        <a href="https://x.com/simuphish" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/twitter_5969020.png" alt=""></a>
+                        <a href="https://www.linkedin.com/company/sim-u-phish/" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/social_16033412.png" alt=""></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(100,100,255,0.1); text-align: center; color: rgba(255,255,255,0.5); font-size: 0.8rem;">
+                <p>© 2025 simUphish. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Calculator functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Risk Calculator
+            const riskInputs = document.querySelectorAll('#risk-calculator input[type="range"]');
+            riskInputs.forEach(input => {
+                input.addEventListener('input', updateRiskAssessment);
+            });
+            
+            function updateRiskAssessment() {
+                const reporting = parseInt(document.getElementById('reporting-searches').value);
+                const failure = parseInt(document.getElementById('failure-rate').value);
+                const typeRisk = parseInt(document.getElementById('type-risk').value);
+                
+                // Calculate composite score (simple average for demo)
+                const score = Math.round((reporting + failure + typeRisk) / 3);
+                
+                let assessment = '';
+                if (score <= 8) {
+                    assessment = `<p><strong>0-8 Score:</strong> A score in this range typically indicates low engagement in phishing services across the organization. To improve, emphasize positive reinforcement through feedback and recognition.</p>`;
+                } else if (score <= 29) {
+                    assessment = `<p><strong>10-29 Score:</strong> This score shows that your organization has a competitive edge, though there is still room for improvement.</p>`;
+                } else {
+                    assessment = `<p><strong>30+ Score:</strong> This is an impressive result, however, a word of caution is necessary. Scores in this range often seem too good to be true. Ensure your simulations are challenging, sorted for different individuals, and tailored to specific job functions.</p>`;
+                }
+                
+                document.getElementById('risk-result').innerHTML = assessment;
+            }
+            
+            // Impact Calculator
+            const impactInputs = document.querySelectorAll('#impact-calculator input, #impact-calculator select');
+            impactInputs.forEach(input => {
+                input.addEventListener('input', updateImpactComparison);
+                input.addEventListener('change', updateImpactComparison);
+            });
+            
+            function updateImpactComparison() {
+                const employees = parseInt(document.getElementById('employees').value);
+                const simulations = parseInt(document.getElementById('simulations').value);
+                const failureRate = parseInt(document.getElementById('failure-rate-impact').value);
+                
+                // Traditional training calculations
+                const traditionalTraining = Math.round(employees * simulations * (failureRate / 100));
+                document.getElementById('traditional-rate').textContent = failureRate + '%';
+                document.getElementById('traditional-total').textContent = traditionalTraining;
+                
+                // simUphish training calculations (fixed rates for demo)
+                document.getElementById('simuphish-rate').textContent = '72%';
+                document.getElementById('simuphish-total').textContent = (employees * 12).toLocaleString();
+            }
+            
+            // ROI Calculator
+            const roiInputs = document.querySelectorAll('#roi-calculator input');
+            roiInputs.forEach(input => {
+                input.addEventListener('input', updateROICalculation);
+            });
+            
+            function updateROICalculation() {
+                const employees = parseInt(document.getElementById('employee-count').value);
+                const attacks = parseInt(document.getElementById('phishing-attacks').value);
+                const penetration = parseInt(document.getElementById('penetration-rate').value) / 100;
+                const fteCount = parseInt(document.getElementById('fte-count').value);
+                const hoursPerFte = parseInt(document.getElementById('hours-per-fte').value);
+                const fteCost = parseInt(document.getElementById('fte-cost').value);
+                const downtime = parseInt(document.getElementById('employee-downtime').value);
+                const revenue = parseInt(document.getElementById('annual-revenue').value) * 1000000;
+                const totalEmployees = parseInt(document.getElementById('total-employees').value);
+                
+                // Calculate annual breaches
+                const annualBreaches = employees * attacks * 12 * penetration;
+                
+                // Calculate remediation cost
+                const remediationCost = annualBreaches * fteCount * hoursPerFte * fteCost;
+                
+                // Calculate productivity loss
+                const hourlyRate = revenue / (totalEmployees * 2080); // 2080 = 40hrs * 52wks
+                const productivityCost = annualBreaches * downtime * hourlyRate;
+                
+                // Update results
+                document.getElementById('remediation-cost').textContent = remediationCost.toLocaleString();
+                document.getElementById('productivity-cost').textContent = Math.round(productivityCost).toLocaleString();
+                document.getElementById('total-savings').textContent = Math.round(remediationCost + productivityCost).toLocaleString();
+            }
+            
+            // Initialize all calculators
+            updateRiskAssessment();
+            updateImpactComparison();
+            updateROICalculation();
+            
+            // Smooth scrolling for sidebar links
+            document.querySelectorAll('.calculator-menu a').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update active menu item
+                    document.querySelectorAll('.calculator-menu a').forEach(a => a.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Scroll to section
+                    const targetId = this.getAttribute('href');
+                    document.querySelector(targetId).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // Highlight current section in sidebar
+            window.addEventListener('scroll', function() {
+                const sections = document.querySelectorAll('.calculator-section');
+                let currentSection = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 100;
+                    if (window.pageYOffset >= sectionTop) {
+                        currentSection = '#' + section.getAttribute('id');
+                    }
+                });
+                
+                document.querySelectorAll('.calculator-menu a').forEach(a => {
+                    a.classList.remove('active');
+                    if (a.getAttribute('href') === currentSection) {
+                        a.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+    <script>document.addEventListener('DOMContentLoaded', function() {
+        
+        const menuBtn = document.createElement('button');
+        menuBtn.className = 'mobile-menu-btn';
+        menuBtn.innerHTML = '☰';
+        menuBtn.onclick = function() {
+            document.querySelector('.nav-items').classList.toggle('active');
+        };
+        
+        const navbar = document.querySelector('.navbar');
+        const navItems = document.createElement('div');
+        navItems.className = 'nav-items';
+        
+        // Move existing nav items into the new container
+        const existingItems = document.querySelectorAll('.nav-item');
+        existingItems.forEach(item => {
+            navItems.appendChild(item);
+        });
+        
+        navbar.appendChild(menuBtn);
+        navbar.appendChild(navItems);
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!navbar.contains(e.target) && !e.target.classList.contains('mobile-menu-btn')) {
+                navItems.classList.remove('active');
+            }
+        });
+    });
+
+    
+    </script>
+</body>
+</html>

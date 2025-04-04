@@ -1,8 +1,11 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+// Main Three.js library
+import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+
+// Three.js examples (using skypack.dev)
+import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/loaders/GLTFLoader';
+import { EffectComposer } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/RenderPass';
+import { UnrealBloomPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { FontLoader, TextGeometry } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
   // Particle configurations
   const particlesjsConfig1 = {
@@ -342,10 +345,28 @@ import { FontLoader, TextGeometry } from 'https://cdnjs.cloudflare.com/ajax/libs
 
 class SpineExperience {
   constructor() {
+
+    // Add mobile detection
+    this.isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
     // Setup
     this.container = document.getElementById('canvas-container');
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+
+     // Adjust settings for mobile
+     if (this.isMobile) {
+      // Reduce particle counts for mobile
+      particlesjsConfig1.particles.number.value = 80;
+      particlesjsConfig2.particles.number.value = 80;
+      particlesjsConfig3.particles.number.value = 80;
+      
+      // Smaller frame sizes for mobile
+      this.mobileFrameScale = 0.6;
+    } else {
+      this.mobileFrameScale = 1;
+    }
+    
     
       this.hasShownAllFrames = false;
 this.lastFrameIndexShown = -1;
@@ -486,6 +507,19 @@ init() {
   // Create scene
   this.scene = new THREE.Scene();
   this.scene.background = new THREE.Color(0x15202a);
+   // Adjust camera FOV for mobile
+   const fov = this.isMobile ? 45 : 35;
+   this.camera = new THREE.PerspectiveCamera(fov, this.width / this.height, 0.1, 1000);
+   
+   // Position camera further back on mobile for better view
+   this.camera.position.z = this.isMobile ? 15 : 12;
+   
+   // Create renderer with mobile-optimized settings
+   this.renderer = new THREE.WebGLRenderer({ 
+     antialias: !this.isMobile, // Disable antialiasing on mobile for performance
+     alpha: true,
+     powerPreference: this.isMobile ? "low-power" : "high-performance"
+   });
   
   // Create camera
   this.camera = new THREE.PerspectiveCamera(35, this.width / this.height, 0.1, 1000);
@@ -531,40 +565,37 @@ init() {
     this.composer.addPass(renderPass);
     
     // Reduced bloom effect
-    const bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(this.width, this.height),
-      0.7,  // Reduced strength
-      0.4,  // Reduced radius
-      0.3   // Threshold
-    );
-    this.composer.addPass(bloomPass);
+    // const bloomPass = new UnrealBloomPass(
+    //   new THREE.Vector2(this.width, this.height),
+    //   0.7,  // Reduced strength
+    //   0.4,  // Reduced radius
+    //   0.3   // Threshold
+    // );
+    // this.composer.addPass(bloomPass);
   }
-  
   setupLighting() {
-    // Ambient light
+    // Keep ambient light for general illumination
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     this.scene.add(ambientLight);
     
-    
-    // Main directional light
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    // Main directional light - keep this for shading
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1.0); // Slightly reduced intensity
     mainLight.position.set(1, 1, 1);
     mainLight.castShadow = true;
     mainLight.shadow.mapSize.width = 2048;
     mainLight.shadow.mapSize.height = 2048;
     this.scene.add(mainLight);
     
-    // Accent lights for glow
-    const blueLight = new THREE.PointLight(0xf2f2f2, 2.5, 15);
+    // Reduce intensity of accent lights
+    const blueLight = new THREE.PointLight(0xf2f2f2, 1.5, 15); // Reduced from 2.5
     blueLight.position.set(-2, 1, 2);
     this.scene.add(blueLight);
     
-    const purpleLight = new THREE.PointLight(0xf2f2f2, 2.5, 15);
+    const purpleLight = new THREE.PointLight(0xf2f2f2, 1.5, 15); // Reduced from 2.5
     purpleLight.position.set(2, -1, 2);
     this.scene.add(purpleLight);
     
-    // Add additional rim light
-    const rimLight = new THREE.PointLight(0xf2f2f2, 2, 15);
+    const rimLight = new THREE.PointLight(0xf2f2f2, 1.0, 15); // Reduced from 2.0
     rimLight.position.set(0, 0, -5);
     this.scene.add(rimLight);
   }
@@ -803,6 +834,8 @@ createCircularPath() {
       // Find the point on the curve
       const point = this.framePath.getPoint(t);
       
+      
+
       // Find closest defined point in pathPoints for dimensions
       let closestPoint = this.pathPoints[0];
       let minDist = Infinity;
@@ -818,8 +851,8 @@ createCircularPath() {
       
       // Create rounded panel with beveled edges
       const shape = new THREE.Shape();
-      const width = (closestPoint.frameWidth || 1.5) * 2.5; // Multiplied by 1.5 for 50% larger
-      const height = (closestPoint.frameHeight || 1) * 2.5; // Multiplied by 1.5 for 50% larger
+      const width = (closestPoint.frameWidth || 1.5) * 2.5 * this.mobileFrameScale;
+      const height = (closestPoint.frameHeight || 1) * 2.5 * this.mobileFrameScale;
       const radius = 0.15; // corner radius
 
       shape.moveTo(0, radius);
@@ -850,12 +883,13 @@ createCircularPath() {
         color: this.frameColors[i % this.frameColors.length],
         transparent: true,
         opacity: 0.5,
-        shininess: 30,
-        emissive: this.frameColors[i % this.frameColors.length],
-        emissiveIntensity: 0.15,
+        shininess: 10,
+        
+        emissive: new THREE.Color(0x000000),
+        emissiveIntensity: 0,
         // Add a subtle blur effect with displacementMap
-        displacementScale: 0.05,
-        displacementBias: 0.05
+        // displacementScale: 0.05,
+        // displacementBias: 0.05
       });
       const frame = new THREE.Mesh(frameGeometry, frameMaterial);
       
@@ -1302,30 +1336,47 @@ updateFramesOnScroll(progress) {
 }
 
 setupHoverEffects() {
-  // Setup mouse move listener for parallax effect
-  window.addEventListener('mousemove', (event) => {
+  // Handle both mouse and touch events
+  const handlePointerMove = (event) => {
+    // Get coordinates from either mouse or touch event
+    const clientX = event.clientX || (event.touches && event.touches[0].clientX);
+    const clientY = event.clientY || (event.touches && event.touches[0].clientY);
+    
+    if (clientX === undefined || clientY === undefined) return;
+    
     // Calculate normalized position (-1 to 1)
-    this.cursor.x = (event.clientX / this.width) * 2 - 1;
-    this.cursor.y = -(event.clientY / this.height) * 2 + 1;
+    this.cursor.x = (clientX / this.width) * 2 - 1;
+    this.cursor.y = -(clientY / this.height) * 2 + 1;
     
     // Apply subtle camera movement based on cursor
     if (this.camera) {
-      // Smooth camera movement - subtle parallax
-      this.camera.position.x += (this.cursor.x * 0.5 - this.camera.position.x) * 0.05;
-      this.camera.position.y += (this.cursor.y * 0.5 - this.camera.position.y) * 0.05;
-      this.camera.lookAt(new THREE.Vector3(0, 0, 3)); // Look at spine
+      // Reduce movement sensitivity on mobile
+      const sensitivity = this.isMobile ? 0.3 : 0.5;
+      this.camera.position.x += (this.cursor.x * sensitivity - this.camera.position.x) * 0.05;
+      this.camera.position.y += (this.cursor.y * sensitivity - this.camera.position.y) * 0.05;
+      this.camera.lookAt(new THREE.Vector3(0, 0, 3));
     }
-  });
+  };
+  
+  // Add both mouse and touch events
+  window.addEventListener('mousemove', handlePointerMove);
+  window.addEventListener('touchmove', handlePointerMove);
   
   // Setup raycaster for frame interaction
   this.raycaster = new THREE.Raycaster();
   this.mouse = new THREE.Vector2();
   
-  // Add mouse move event for hover effects
-  this.renderer.domElement.addEventListener('mousemove', (event) => {
+  // Unified pointer move handler for hover effects
+  const handlePointerHover = (event) => {
+    // Get coordinates from either mouse or touch event
+    const clientX = event.clientX || (event.touches && event.touches[0].clientX);
+    const clientY = event.clientY || (event.touches && event.touches[0].clientY);
+    
+    if (clientX === undefined || clientY === undefined) return;
+    
     // Calculate mouse position in normalized device coordinates
-    this.mouse.x = (event.clientX / this.width) * 2 - 1;
-    this.mouse.y = -(event.clientY / this.height) * 2 + 1;
+    this.mouse.x = (clientX / this.width) * 2 - 1;
+    this.mouse.y = -(clientY / this.height) * 2 + 1;
     
     // Update the raycaster
     this.raycaster.setFromCamera(this.mouse, this.camera);
@@ -1336,9 +1387,9 @@ setupHoverEffects() {
     // Reset all frames
     this.videoFrames.forEach(frame => {
       if (frame !== this.activeFrame) {
-        // Small scale for non-hovered frames (but don't reset the active center frame)
+        // Small scale for non-hovered frames
         if (!frame.userData.isAtCenter) {
-          frame.userData.targetScale = 1.0;
+          frame.userData.targetScale = 1.0 * this.mobileFrameScale;
         }
       }
     });
@@ -1349,21 +1400,40 @@ setupHoverEffects() {
       this.activeFrame = hoveredFrame;
       
       // Slightly larger scale on hover
-      hoveredFrame.userData.targetScale = 1.15;
+      hoveredFrame.userData.targetScale = 1.15 * this.mobileFrameScale;
       
-      // Add cursor change
-      document.body.style.cursor = 'pointer';
+      // Add cursor change (only for non-touch devices)
+      if (!this.isMobile) {
+        document.body.style.cursor = 'pointer';
+      }
     } else {
       this.activeFrame = null;
-      document.body.style.cursor = 'auto';
+      if (!this.isMobile) {
+        document.body.style.cursor = 'auto';
+      }
     }
-  });
+  };
   
-  // Add click event for frames
-  this.renderer.domElement.addEventListener('click', (event) => {
+  // Add event listeners
+  this.renderer.domElement.addEventListener('mousemove', handlePointerHover);
+  this.renderer.domElement.addEventListener('touchmove', handlePointerHover);
+  
+  // Unified click/tap handler
+  const handlePointerClick = (event) => {
+    // Prevent default on touch to avoid mouse event emulation
+    if (event.type === 'touchstart') {
+      event.preventDefault();
+    }
+    
+    // Get coordinates
+    const clientX = event.clientX || (event.touches && event.touches[0].clientX);
+    const clientY = event.clientY || (event.touches && event.touches[0].clientY);
+    
+    if (clientX === undefined || clientY === undefined) return;
+    
     // Update the mouse position
-    this.mouse.x = (event.clientX / this.width) * 2 - 1;
-    this.mouse.y = -(event.clientY / this.height) * 2 + 1;
+    this.mouse.x = (clientX / this.width) * 2 - 1;
+    this.mouse.y = -(clientY / this.height) * 2 + 1;
     
     // Update the raycaster
     this.raycaster.setFromCamera(this.mouse, this.camera);
@@ -1376,20 +1446,27 @@ setupHoverEffects() {
       const clickedFrame = intersects[0].object;
       console.log(`Clicked on frame ${clickedFrame.userData.index} - ${clickedFrame.userData.text}`);
       
-      // Here you can trigger an action when clicking a frame
-      // For example, open a modal with content related to the frame
+      // Trigger action when clicking a frame
       if (typeof this.onFrameClicked === 'function') {
         this.onFrameClicked(clickedFrame.userData.index, clickedFrame.userData.text);
       }
     }
-  });
+  };
+  
+  // Add both click and touch events
+  this.renderer.domElement.addEventListener('click', handlePointerClick);
+  this.renderer.domElement.addEventListener('touchstart', handlePointerClick);
 }
 
 setupEvents() {
-  // Resize event for responsive design
+  // Resize event with mobile considerations
   window.addEventListener('resize', () => {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+    
+    // Adjust camera FOV for mobile on resize
+    const fov = this.isMobile ? 45 : 35;
+    this.camera.fov = fov;
     
     // Update camera
     this.camera.aspect = this.width / this.height;
@@ -1398,6 +1475,23 @@ setupEvents() {
     // Update renderer and composer
     this.renderer.setSize(this.width, this.height);
     this.composer.setSize(this.width, this.height);
+    
+    // Adjust camera position for mobile
+    this.camera.position.z = this.isMobile ? 15 : 12;
+  });
+  
+  // Handle device orientation changes
+  window.addEventListener('orientationchange', () => {
+    // Small delay to ensure dimensions are correct
+    setTimeout(() => {
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+      
+      this.camera.aspect = this.width / this.height;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(this.width, this.height);
+      this.composer.setSize(this.width, this.height);
+    }, 100);
   });
   
   // Additional method for frame click handling

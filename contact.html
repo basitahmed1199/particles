@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | simUphish</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- <style>
+        /* Contact Page Specific Styles */
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 5% 80px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+        
+        .contact-info {
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            border: 1px solid rgba(100, 100, 255, 0.2);
+        }
+        
+        .contact-info h2 {
+            color: #4f9cff;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+        
+        .contact-method {
+            margin-bottom: 30px;
+        }
+        
+        .contact-method h3 {
+            color: #00ffaa;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .contact-method p {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 5px;
+        }
+        
+        .contact-method a {
+            color: #4f9cff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .contact-method a:hover {
+            color: #00ffaa;
+        }
+        
+        .contact-form {
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            border: 1px solid rgba(100, 100, 255, 0.2);
+        }
+        
+        .contact-form h2 {
+            color: #4f9cff;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px solid rgba(100, 100, 255, 0.2);
+            border-radius: 5px;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(45deg, #4f9cff, #00ffaa);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(79, 156, 255, 0.4);
+        }
+        
+        .map-container {
+            margin-top: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 300px;
+            background: rgba(100,100,255,0.1);
+        }
+        
+        @media (max-width: 900px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style> -->
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="loading-bar-container">
+            <div class="loading-progress"></div>
+        </div>
+        <div class="loading-text">Loading Experience...</div>
+    </div>
+
+    <!-- Background video -->
+    <div class="video-container">
+        <video autoplay loop muted playsinline disablepictureinpicture>
+            <source src="line.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-item nav-home">HOME</a>
+        
+        <!-- Solutions Dropdown -->
+        <div class="nav-item">
+            SOLUTIONS
+            <div class="dropdown">
+                <a href="simulated-phishing.html" class="dropdown-item">Simulated Phishing</a>
+                <a href="security-awareness.html" class="dropdown-item">Security Awareness</a>
+            </div>
+        </div>
+        
+        <!-- Resources Dropdown -->
+        <div class="nav-item">
+            RESOURCES
+            <div class="dropdown">
+                <a href="resources.html#definitions" class="dropdown-item">Definitions</a>
+                <a href="resources.html#guides" class="dropdown-item">Guides</a>
+                <a href="resources.html#free-tools" class="dropdown-item">Free Tools</a>
+                <a href="resources.html#training" class="dropdown-item">Training</a>
+            </div>
+        </div>
+        
+        <!-- Partners Link -->
+        <a href="partners.html" class="nav-item">PARTNERS</a>
+        
+        <!-- About Dropdown -->
+        <a href="about.html" class="nav-item">ABOUT</a>
+        
+        <a href="contact.html" class="nav-item">CONTACT</a>
+    </nav>
+
+    <!-- Contact Page Content -->
+    <div class="contact-container">
+        <div class="contact-info">
+            <h2>Get In Touch</h2>
+            
+            <div class="contact-method">
+                <h3>General Inquiries</h3>
+                <p>Email: <a href="mailto:info@simuphish.com">contact@simuphish.com</a></p>
+                <p>Phone: <a href="tel:+18005551234">+1 (800) 555-1234</a></p>
+            </div>
+            
+            <div class="contact-method">
+                <h3>Sales</h3>
+                <p>Email: <a href="mailto:sales@simuphish.com">contact@simuphish.com</a></p>
+                <p>Phone: <a href="tel:+18005554321">+1 (800) 555-4321</a></p>
+            </div>
+            
+            <div class="contact-method">
+                <h3>Support</h3>
+                <p>Email: <a href="mailto:support@simuphish.com">contact@simuphish.com</a></p>
+                <p>Phone: <a href="tel:+18005555678">+1 (800) 555-5678</a></p>
+            </div>
+            
+            <div class="contact-method">
+                <h3>Connect with us</h3>
+                <p>To get started</p>
+            </div>
+            
+            <div class="map-container">
+                <!-- You would embed your Google Map here -->
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.215573291234!2d-73.987844924239!3d40.74844097138999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1712227777777" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+        
+        <div class="contact-form">
+            <h2>Send Us a Message</h2>
+            <form action="mailto:basitahmed1199@gmail.com" method="post" enctype="text/plain">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <select id="subject" name="subject" required>
+                        <option value="">Select a subject</option>
+                        <option value="sales">Sales Inquiry</option>
+                        <option value="support">Technical Support</option>
+                        <option value="partnership">Partnership</option>
+                        <option value="general">General Inquiry</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: rgba(10, 10, 20, 0.9); padding: 60px 10%; border-top: 1px solid rgba(100, 100, 255, 0.2);">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <div style="margin-bottom: 40px;">
+                <h2 style="color: #4f9cff; font-size: 2rem; margin-bottom: 10px;">simUphish</h2>
+                <p style="color: rgba(255,255,255,0.7); letter-spacing: 2px; margin-bottom: 5px;">DEFEND | EDUCATE | EMPOWER</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px;">
+                <!-- Solutions Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">SOLUTIONS</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="simulated-phishing.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Phishing Training</a></li>
+                        <li><a href="security-awareness.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Security Awareness Training</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Why simUphish Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">WHY SIMUPHISH?</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="security.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Security</a></li>
+                        <li style="margin-bottom: 10px;"><a href="calculators.html#risk-calculator" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">ROI Calculator</a></li>
+                        <li style="margin-bottom: 10px;"><a href="calculators.html#roi-calculator" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Risk Calculator</a></li>
+                        <li style="margin-bottom: 10px;"><a href="calculators.html#impact-calculator" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Impact Calculator</a></li>
+                       
+                    </ul>
+                </div>
+                
+               
+                
+                <!-- Company Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">COMPANY</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="about.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">About</a></li>
+                        <li style="margin-bottom: 10px;"><a href="partners.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Partners</a></li>
+                        <li style="margin-bottom: 10px;"><a href="contact.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Careers</a></li>
+                      
+                    </ul>
+                </div>
+                
+                <!-- Industries Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">RESOURCES</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="resources.html#definitions" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Definitions</a></li>
+                        <li style="margin-bottom: 10px;"><a href="resources.html#guides" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Guides</a></li>
+                        <li style="margin-bottom: 10px;"><a href="resources.html#free-tools" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Free Tools</a></li>
+                        <li style="margin-bottom: 10px;"><a href="resources.html#training" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Training</a></li>
+                       
+                    </ul>
+                </div>
+                
+                <!-- Newsletter Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">STAY IN THE LOOP</h3>
+                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">Want to receive news and updates?</p>
+                    <form style="display: flex; gap: 10px;">
+                        <input type="email" placeholder="Email" style="background: rgba(20,20,30,0.6); border: 1px solid rgba(100,100,255,0.2); padding: 12px 15px; border-radius: 50px; color: white; flex-grow: 1;">
+                        <button type="submit" style="background: linear-gradient(45deg, #4f9cff, #00ffaa); color: white; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer;">Subscribe</button>
+                    </form>
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <a href="https://www.facebook.com/simuphish/" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/facebook_5968764.png" alt=""></a>
+                        <a href="https://www.instagram.com/simuphish/" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/social_16033412.png" alt=""></a>
+                        <a href="https://www.pinterest.com/simuphish/" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/pinterest_11378604.png" alt=""></a>
+                        <a href="https://www.youtube.com/@simUphishofficial" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/youtube_4494485.png" alt=""></a>
+                        <a href="https://x.com/simuphish" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/twitter_5969020.png" alt=""></a>
+                        <a href="https://www.linkedin.com/company/sim-u-phish/" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/social_16033412.png" alt=""></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(100,100,255,0.1); text-align: center; color: rgba(255,255,255,0.5); font-size: 0.8rem;">
+                <p>© 2025 simUphish. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        // Simple loading animation
+        document.addEventListener('DOMContentLoaded', () => {
+
+            
+
+
+            const loadingScreen = document.querySelector('.loading-screen');
+            const progress = document.querySelector('.loading-progress');
+            
+            let width = 0;
+            const interval = setInterval(() => {
+                width += Math.random() * 10;
+                if (width > 100) width = 100;
+                progress.style.width = width + '%';
+                
+                if (width === 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingScreen.style.opacity = 0;
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                        }, 1000);
+                    }, 500);
+                }
+            }, 200);
+            
+            // Form submission handling
+            const contactForm = document.querySelector('.contact-form form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    alert('Thank you for your message! We will get back to you soon.');
+                    contactForm.reset();
+                });
+            }
+        });
+
+        function sendEmail() {
+            Email.send({
+                SecureToken: "C973D7AD-F097-4B95-91F4-40ABC5567812", // Get from https://smtpjs.com/
+                To: "contact@simuphish.com",
+                From: document.getElementById("email").value,
+                Subject: document.getElementById("subject").value,
+                Body: `
+                    <strong>Name:</strong> ${document.getElementById("name").value} <br>
+                    <strong>Email:</strong> ${document.getElementById("email").value} <br>
+                    <strong>Phone:</strong> ${document.getElementById("phone").value} <br>
+                    <strong>Subject:</strong> ${document.getElementById("subject").value} <br>
+                    <strong>Message:</strong> ${document.getElementById("message").value}
+                `
+            }).then(message => alert("Email Sent Successfully!"));
+        }
+    </script>
+    <script>document.addEventListener('DOMContentLoaded', function() {
+        
+        const menuBtn = document.createElement('button');
+        menuBtn.className = 'mobile-menu-btn';
+        menuBtn.innerHTML = '☰';
+        menuBtn.onclick = function() {
+            document.querySelector('.nav-items').classList.toggle('active');
+        };
+        
+        const navbar = document.querySelector('.navbar');
+        const navItems = document.createElement('div');
+        navItems.className = 'nav-items';
+        
+        // Move existing nav items into the new container
+        const existingItems = document.querySelectorAll('.nav-item');
+        existingItems.forEach(item => {
+            navItems.appendChild(item);
+        });
+        
+        navbar.appendChild(menuBtn);
+        navbar.appendChild(navItems);
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!navbar.contains(e.target) && !e.target.classList.contains('mobile-menu-btn')) {
+                navItems.classList.remove('active');
+            }
+        });
+    });
+
+    
+    </script>
+</body>
+</html>

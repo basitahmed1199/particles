@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security & Compliance | simUphish</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        /* Security Page Specific Styles */
+        .security-page {
+            padding: 120px 10% 80px;
+            color: white;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .security-header {
+            margin-bottom: 60px;
+        }
+
+        .security-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #4f9cff, #00ffaa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .security-header p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.8);
+            max-width: 800px;
+        }
+
+        .compliance-section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: #4f9cff;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, #4f9cff, #00ffaa);
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .document-card {
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid rgba(100, 100, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(100, 100, 255, 0.2);
+            border-color: rgba(100, 100, 255, 0.5);
+        }
+
+        .document-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #00ffaa;
+        }
+
+        .document-card p {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.5;
+        }
+
+        .security-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .control-category {
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid rgba(100, 100, 255, 0.2);
+        }
+
+        .control-category h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #4f9cff;
+            display: flex;
+            align-items: center;
+        }
+
+        .control-category h3:before {
+            content: "";
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #00ffaa;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .control-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .control-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(100, 100, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .control-list li:before {
+            content: "✓";
+            color: #00ffaa;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        .control-list li:last-child {
+            border-bottom: none;
+        }
+
+        .faq-section {
+            margin-top: 60px;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(100, 100, 255, 0.2);
+            padding-bottom: 20px;
+        }
+
+        .faq-question {
+            font-size: 1.1rem;
+            color: white;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-question:after {
+            content: "+";
+            font-size: 1.5rem;
+            color: #4f9cff;
+        }
+
+        .faq-question.active:after {
+            content: "-";
+        }
+
+        .faq-answer {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.8);
+            display: none;
+        }
+
+        .faq-answer.show {
+            display: block;
+        }
+
+        .additional-info {
+            margin-top: 60px;
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 30px;
+            border-left: 4px solid #4f9cff;
+        }
+
+        .additional-info p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 5, 16, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-container {
+            background: rgba(20, 20, 30, 0.95);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            padding: 40px;
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #4f9cff;
+        }
+
+        .modal-content {
+            line-height: 1.6;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .modal-content h2 {
+            font-size: 1.4rem;
+            margin: 25px 0 15px;
+            color: #00ffaa;
+        }
+
+        .modal-content p {
+            margin-bottom: 15px;
+        }
+
+        .modal-content ul {
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .security-page {
+                padding: 100px 5% 60px;
+            }
+
+            .documents-grid, .security-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-item nav-home">HOME</a>
+        
+        <!-- Solutions Dropdown -->
+        <div class="nav-item">
+            SOLUTIONS
+            <div class="dropdown">
+                <a href="simulated-phishing.html" class="dropdown-item">Simulated Phishing</a>
+                <a href="security-awareness.html" class="dropdown-item">Security Awareness</a>
+            </div>
+        </div>
+        
+        <!-- Resources Dropdown -->
+        <div class="nav-item">
+            RESOURCES
+            <div class="dropdown">
+                <a href="resources.html#definitions" class="dropdown-item">Definitions</a>
+                <a href="resources.html#guides" class="dropdown-item">Guides</a>
+                <a href="resources.html#free-tools" class="dropdown-item">Free Tools</a>
+                <a href="resources.html#training" class="dropdown-item">Training</a>
+            </div>
+        </div>
+        
+        <!-- Partners Link -->
+        <a href="partners.html" class="nav-item">PARTNERS</a>
+        
+        <!-- About Dropdown -->
+        <a href="about.html" class="nav-item">ABOUT</a>
+        
+        <a href="contact.html" class="nav-item">CONTACT</a>
+    </nav>
+
+    <!-- Security & Compliance Page Content -->
+    <div class="security-page">
+        <div class="security-header">
+            <h1>Security & Compliance</h1>
+            <p>At simUphish, we securely manage employee data, including phishing incidents and training stats, with tailored controls.</p>
+        </div>
+
+        <!-- GDPR Compliance Section -->
+        <section class="compliance-section">
+            <h2 class="section-title">GDPR Compliance</h2>
+            
+            <h3 style="padding: 14px 0px;">Legal Documents</h3>
+            <div class="documents-grid">
+                <div class="document-card" data-modal="nda">
+                    <h3>Mutual Non-Disclosure Agreement (NDA)</h3>
+                    <p>Our agreement protecting confidential information shared between simUphish and our clients.</p>
+                </div>
+                
+                <div class="document-card" data-modal="terms">
+                    <h3>Terms & Conditions</h3>
+                    <p>The legal terms governing the use of simUphish services and platform.</p>
+                </div>
+                
+                <div class="document-card"  data-modal="privacy">
+                    <h3>Privacy Policy</h3>
+                    <p>How we collect, use, and protect your personal data in compliance with GDPR.</p>
+                </div>
+                
+                <div class="document-card" data-modal="sla">
+                    <h3>Subscription & Service Level Agreement</h3>
+                    <p>Details of our service commitments and uptime guarantees.</p>
+                </div>
+                
+                <div class="document-card" data-modal="dpa">
+                    <h3>Data Processing Agreement</h3>
+                    <p>Our GDPR-compliant agreement for processing personal data on behalf of our clients.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Policies Section -->
+        <section class="compliance-section">
+            <h2 class="section-title">Security Policies</h2>
+            
+            <div class="documents-grid">
+                <div class="document-card" data-modal="infosec">
+                    <h3>Information Security Policy</h3>
+                    <p>Our comprehensive framework for protecting information assets.</p>
+                </div>
+                
+                <div class="document-card" data-modal="data-classification">
+                    <h3>Data Classification, Handling and Retention Policy</h3>
+                    <p>How we classify and manage data throughout its lifecycle.</p>
+                </div>
+                
+                <div class="document-card" data-modal="aup">
+                    <h3>Acceptable Use Policies</h3>
+                    <p>Rules for appropriate use of simUphish systems and resources.</p>
+                </div>
+                
+                <div class="document-card" data-modal="access-control">
+                    <h3>Access Control Policy</h3>
+                    <p>Controls governing access to systems and data.</p>
+                </div>
+                
+                <div class="document-card" data-modal="incident-response">
+                    <h3>Incident Response Plans</h3>
+                    <p>Our procedures for detecting, responding to, and recovering from security incidents.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Controls Section -->
+        <section class="compliance-section">
+            <h2 class="section-title">Security Controls</h2>
+            <p>Security measures and capabilities implemented by simUphish ensure appropriate protections are applied where most crucial.</p>
+            
+            <div class="security-controls">
+                <div class="control-category">
+                    <h3>Data Security</h3>
+                    <ul class="control-list">
+                        <li>Data Classification Policy</li>
+                        <li>Access Control Policy</li>
+                        <li>Daily Database Backups</li>
+                        <li>Database Access Restricted</li>
+                        <li>Database Encrypted At-Rest</li>
+                    </ul>
+                </div>
+                
+                <div class="control-category">
+                    <h3>Network Security</h3>
+                    <ul class="control-list">
+                        <li>Web Application Firewall</li>
+                        <li>Direct Access Disabled (SSH/RDP)</li>
+                        <li>Network Logging & Monitoring</li>
+                        <li>Managed DDoS Protection</li>
+                        <li>Data Encrypted In-Transit</li>
+                    </ul>
+                </div>
+                
+                <div class="control-category">
+                    <h3>Application Security</h3>
+                    <ul class="control-list">
+                        <li>Responsible Disclosure Process</li>
+                        <li>Annual Penetration Testing</li>
+                        <li>Daily Vulnerability Scanning</li>
+                        <li>Secure Development Practices</li>
+                        <li>Change Management Practices</li>
+                    </ul>
+                </div>
+                
+                <div class="control-category">
+                    <h3>Infrastructure Security</h3>
+                    <ul class="control-list">
+                        <li>Hardened Infrastructure</li>
+                        <li>Automated Security Patching</li>
+                        <li>Multiple Availability Zones</li>
+                        <li>MFA on Administrator Console</li>
+                        <li>Auto-Scaled & Load-Balanced</li>
+                    </ul>
+                </div>
+                
+                <div class="control-category">
+                    <h3>Product Security</h3>
+                    <ul class="control-list">
+                        <li>Cloud Anomaly Detection</li>
+                        <li>Cloud Configuration Security</li>
+                        <li>Cloud Identity Security</li>
+                        <li>Cloud Workload Protection</li>
+                        <li>System Availability Monitoring</li>
+                    </ul>
+                </div>
+                
+                <div class="control-category">
+                    <h3>Organizational Security</h3>
+                    <ul class="control-list">
+                        <li>Monthly Phishing Simulations</li>
+                        <li>Annual Security Awareness Training</li>
+                        <li>Endpoint Configurations Hardened</li>
+                        <li>Endpoint Anti-Malware Protection</li>
+                        <li>MDM Managed Endpoints</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">Will my data be sold, transferred, or disclosed to third parties?</div>
+                <div class="faq-answer">
+                    <p>Under no circumstances will simUphish engage in the sale of your data to third parties:</p>
+                    <p>simUphish utilizes multiple subprocessors to facilitate the essential functions of the simUphish Cloud Platform. Details about these subprocessors, including their purpose, data shared, security measures, and storage locations, can be found in the Subprocessors section of the Security & Compliance page.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Is sensitive data encrypted both when stored and during transmission?</div>
+                <div class="faq-answer">
+                    <p>Yes, all sensitive data is encrypted both at rest and in transit. We use industry-standard AES-256 encryption for data at rest and TLS 1.2+ for all data in transit.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Is multi-factor authentication (MFA) required for administrators accessing the production cloud environment?</div>
+                <div class="faq-answer">
+                    <p>Yes, MFA is mandatory for all administrative access to our production environments. We enforce this through our identity and access management systems.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Is it possible for me to specify the location where my sensitive data is stored?</div>
+                <div class="faq-answer">
+                    <p>Yes, we offer regional data residency options. During onboarding, you can specify your preferred data storage location from our available regions.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Are background checks conducted on simUphish employees?</div>
+                <div class="faq-answer">
+                    <p>Yes, all simUphish employees undergo thorough background checks prior to employment, with additional checks for personnel with elevated access privileges.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Additional Information Section -->
+        <div class="additional-info">
+            <p>simUphish is a privately held software company specializing in the development of the simUphish Cloud Platform. The platform aims to simplify the delivery of simulated phishing and security awareness training to employees by reducing complexity and associated costs. Our data collection practices are limited to the information necessary to provide this service to our customers. For further inquiries, please contact us at support@simuphish.com.</p>
+            <p>Our policies, standards, procedures, and guidelines are aligned with the NIST Cybersecurity Framework (NIST CSF) and ACSC Information Security Manual (ACSC ISM). Additionally, we incorporate supplementary guidance from ISO27002, CIS Top 18 cyber controls, CIS benchmarks, and the OWASP Application Security Verification Standard (OWASP ASVS).</p>
+        </div>
+    </div>
+
+    <!-- Legal Document Modals -->
+    <div id="ndaModal" class="modal-overlay">
+        <div class="modal-container">
+            <button class="modal-close">&times;</button>
+            <h2 class="modal-title">Mutual Non-Disclosure Agreement (NDA) & GDPR Compliance</h2>
+            <div class="modal-content" style="display: block;">
+                <h3>GDPR Compliance</h3>
+                <p>SimUphish has conducted a privacy assessment and updated its Privacy Policy to meet GDPR requirements. We only request and collect necessary data for our service. Our subprocessors are documented, audited, and data sharing is closely monitored. We ensure: Confidentiality commitment from all personnel. Implementation of appropriate security measures to safeguard customer data. Assistance in upholding GDPR obligations, including data subjects’ rights. Support in maintaining GDPR compliance, especially regarding Article 32 (security of processing) and Article 36 (consulting with data protection authorities for high-risk processing).</p>
+                
+            </div>
+        </div>
+    </div>
+
+    <div id="termsModal" class="modal-overlay">
+        <div class="modal-container">
+            <button class="modal-close">&times;</button>
+            <h2 class="modal-title">Terms & Conditions</h2>
+            <div class="modal-content" style="display: block;">
+               
+                
+                <h3>1. Using our services</h3>
+                <p>You must follow any policies made available to you within the Services.
+                    Don’t misuse our Services. For example, don’t interfere with our Services or try to access them using a method other than the interface and the instructions that we provide. You may use our Services only as permitted by law, including applicable export and re-export control laws and regulations. We may suspend or stop providing our Services to you if you do not comply with our terms or policies or if we are investigating suspected misconduct. Using our Services does not give you ownership of any intellectual property rights in our Services or the content you access. You may not use content from our Services unless you obtain permission from its owner or are otherwise permitted by law. These terms do not grant you the right to use any branding or logos used in our Services. Don’t remove, obscure, or alter any legal notices displayed in or along with our Services.</p>
+
+                    <h3>A. Personal Data that we collect about you.</h3>
+                    <p>Personal Data is any information that relates to an identified or identifiable individual. The Personal Data that you provide directly to us through our Sites will be apparent from the context in which you provide the data. In particular: When you register for a simUphish account we collect your full name, company name and email address. When you fill-in our online form to contact our sales team, we collect your full name, work email, company name, and anything else you tell us about your organisation, needs and timeline. When upgrading your licensing tier within simUphish, we collect your full name, company name, phone number and country of origin. When you respond to simUphish emails or surveys we collect your email address, name and any other information you choose to include in the body of your email or responses. If you contact us by phone, we will collect the phone number you use to call simUphish. If you contact us by phone as a simUphish User, we may collect additional information in order to verify your identity.</p>
+                    
+
+                <h3> B. Information that we collect automatically on our Sites.</h3>
+                <p>We also may collect information about your online activities on simUphish. We use Google Analytics on our Sites to help us analyze your use of our Sites and diagnose technical issues.</p>
+                
+                <h3>2. Privacy and copyright protection</h3>
+                <p>simUphish’s Privacy Policy and Data Processing Agreement explain how we treat your personal data and protect your privacy when you use our Services. By using our Services, you agree that simUphish can use such data in accordance with our privacy policy and data processing agreement. We respond to notices of alleged copyright infringement and terminate accounts of repeat infringers according to the process set out in the Australian Privacy Principles.</p>
+
+                <h3>3. Your content in our services</h3>
+                <p>Some of our Services allow you to upload, submit, store, send or receive content. You retain ownership of any intellectual property rights that you hold in that content. In short, what belongs to you stays yours.We respond to notices of alleged copyright infringement and terminate accounts of repeat infringers according to the process set out in the Australian Privacy Principles.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="privacyModal" class="modal-overlay">
+        <div class="modal-container">
+            <button class="modal-close">&times;</button>
+            <h2 class="modal-title">Privacy Policy</h2>
+            <div class="modal-content" style="display: block;">
+                <h3>Privacy Policy</h3>
+
+<p>This Privacy Policy describes Our policies and procedures on the collection, use, and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.</p>
+
+<p>We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy.</p>
+
+<h3>Interpretation and Definitions</h3>
+
+<h4>Interpretation</h4>
+<p>The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.</p>
+
+<h4>Definitions</h4>
+<ul>
+  <li><strong>Account:</strong> A unique account created for You to access our Service or parts of our Service.</li>
+  <li><strong>Company:</strong> (referred to as either “the Company”, “We”, “Us” or “Our” in this Agreement).</li>
+  <li><strong>Cookies:</strong> Small files that are placed on Your computer, mobile device, or any other device by a website, containing details of Your browsing history on that website among its many uses.</li>
+  <li><strong>Country:</strong> Refers to: New South Wales, Australia.</li>
+  <li><strong>Device:</strong> Any device that can access the Service such as a computer, a cellphone, or a digital tablet.</li>
+  <li><strong>Personal Data:</strong> Any information that relates to an identified or identifiable individual.</li>
+  <li><strong>Service:</strong> Refers to the Website.</li>
+  <li><strong>Service Provider:</strong> Any natural or legal person who processes the data on behalf of the Company.</li>
+  <li><strong>Usage Data:</strong> Data collected automatically, either generated by the use of the Service or from the Service infrastructure itself.</li>
+  <li><strong>Website:</strong> Refers to SimUphish, accessible from <a href="https://simUphish.com">https://simUphish.com</a></li>
+  <li><strong>You:</strong> The individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service.</li>
+</ul>
+
+<h3>Collecting and Using Your Personal Data</h3>
+
+<h4>Types of Data Collected</h4>
+
+<h5>Personal Data</h5>
+<p>While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You. Personally identifiable information may include, but is not limited to:</p>
+<ul>
+  <li>Email address</li>
+  <li>First name and last name</li>
+  <li>Company name</li>
+  <li>Usage Data</li>
+</ul>
+
+<h5>Platform Data</h5>
+<p>Through use of Our Service, You may need to provide Us with certain personally identifiable information on the employees You are looking to perform Security Awareness Training against. Personally identifiable information may include:</p>
+<ul>
+  <li>Email addresses</li>
+  <li>First names</li>
+  <li>Last names</li>
+  <li>Job titles</li>
+  <li>Company</li>
+</ul>
+
+<p>Based on employee interactions with Our Service, we may collect additional information such as interactions with phishing emails and training material.</p>
+
+<h3>Third-party Integrations</h3>
+
+<h4>Google</h4>
+<p>Through SimUphish, you can optionally integrate with third-party directory services provided by Google. The types of access and data SimUphish may collect include:</p>
+<ul>
+  <li>DirectoryService.Scope.AdminDirectoryUserReadonly</li>
+  <li>DirectoryService.Scope.AdminDirectoryGroupReadonly</li>
+  <li>DirectoryService.Scope.AdminDirectoryGroupMemberReadonly</li>
+  <li>PeopleServiceService.Scope.UserinfoProfile</li>
+  <li>PeopleServiceService.Scope.UserinfoEmail</li>
+</ul>
+
+<h4>Microsoft</h4>
+<p>SimUphish may access Microsoft APIs for:</p>
+<ul>
+  <li>User.Read.All</li>
+  <li>Group.Read.All</li>
+  <li>GroupMember.Read.All</li>
+  <li>User.Read</li>
+</ul>
+
+<h3>Tracking Technologies and Cookies</h3>
+<p>We use Cookies and similar tracking technologies to track the activity on Our Service. The technologies We use may include:</p>
+<ul>
+  <li><strong>Cookies:</strong> A small file placed on Your Device.</li>
+  <li><strong>Web Beacons:</strong> Small electronic files known as web beacons that permit the Company to count users who have visited pages or opened emails.</li>
+</ul>
+
+<h3>Use of Your Personal Data</h3>
+<ul>
+  <li>To provide and maintain our Service.</li>
+  <li>To manage Your Account.</li>
+  <li>To contact You.</li>
+  <li>To manage Your requests.</li>
+  <li>For business transfers.</li>
+  <li>For other purposes such as data analysis and service improvement.</li>
+</ul>
+
+<h3>Retention of Your Personal Data</h3>
+<p>The Company will retain Your Personal Data only for as long as necessary for the purposes set out in this Privacy Policy.</p>
+
+<h3>Transfer of Your Personal Data</h3>
+<p>Your information, including Personal Data, is processed at the Company’s operating offices and may be transferred outside of Your jurisdiction.</p>
+
+<h3>Security of Your Personal Data</h3>
+<p>While We strive to use commercially acceptable means to protect Your Personal Data, We cannot guarantee its absolute security.</p>
+
+<h3>Children’s Privacy</h3>
+<p>Our Service does not address anyone under the age of 13.</p>
+
+<h3>Changes to this Privacy Policy</h3>
+<p>We may update Our Privacy Policy from time to time and notify You via email or a prominent notice on Our Service.</p>
+
+<h3>Contact Us</h3>
+<p>If you have any questions about this Privacy Policy, You can contact us:</p>
+<ul>
+  <li><strong>By email:</strong> <a href="mailto:support@simuphish.com">support@simuphish.com</a></li>
+  <li><strong>By visiting this page:</strong> <a href="https://simuphish.com/contact">https://simuphish.com/contact</a></li>
+</ul>
+
+            </div>
+        </div>
+    </div>
+
+     <!-- Footer -->
+     <footer style="background: rgba(10, 10, 20, 0.9); padding: 60px 10%; border-top: 1px solid rgba(100, 100, 255, 0.2);">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <div style="margin-bottom: 40px;">
+                <h2 style="color: #4f9cff; font-size: 2rem; margin-bottom: 10px;">simUphish</h2>
+                <p style="color: rgba(255,255,255,0.7); letter-spacing: 2px; margin-bottom: 5px;">DEFEND | EDUCATE | EMPOWER</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px;">
+                <!-- Solutions Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">SOLUTIONS</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="simulated-phishing.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Phishing Training</a></li>
+                        <li><a href="security-awareness.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Security Awareness Training</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Why simUphish Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">WHY SIMUPHISH?</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="security.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Security</a></li>
+                        <li style="margin-bottom: 10px;"><a href="calculators.html#risk-calculator" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">ROI Calculator</a></li>
+                        <li style="margin-bottom: 10px;"><a href="calculators.html#roi-calculator" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Risk Calculator</a></li>
+                        <li style="margin-bottom: 10px;"><a href="calculators.html#impact-calculator" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Impact Calculator</a></li>
+                       
+                    </ul>
+                </div>
+                
+               
+                
+                <!-- Company Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">COMPANY</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="about.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">About</a></li>
+                        <li style="margin-bottom: 10px;"><a href="partners.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Partners</a></li>
+                        <li style="margin-bottom: 10px;"><a href="contact.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Careers</a></li>
+                      
+                    </ul>
+                </div>
+                
+                <!-- Industries Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">RESOURCES</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="resources.html#definitions" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Definitions</a></li>
+                        <li style="margin-bottom: 10px;"><a href="resources.html#guides" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Guides</a></li>
+                        <li style="margin-bottom: 10px;"><a href="resources.html#free-tools" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Free Tools</a></li>
+                        <li style="margin-bottom: 10px;"><a href="resources.html#training" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.3s;">Training</a></li>
+                       
+                    </ul>
+                </div>
+                
+                <!-- Newsletter Column -->
+                <div>
+                    <h3 style="color: #00ffaa; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px;">STAY IN THE LOOP</h3>
+                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">Want to receive news and updates?</p>
+                    <form style="display: flex; gap: 10px;">
+                        <input type="email" placeholder="Email" style="background: rgba(20,20,30,0.6); border: 1px solid rgba(100,100,255,0.2); padding: 12px 15px; border-radius: 50px; color: white; flex-grow: 1;">
+                        <button type="submit" style="background: linear-gradient(45deg, #4f9cff, #00ffaa); color: white; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer;">Subscribe</button>
+                    </form>
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <a href="https://www.facebook.com/simuphish/" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/facebook_5968764.png" alt=""></a>
+                        <a href="https://www.instagram.com/simuphish/" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/social_16033412.png" alt=""></a>
+                        <a href="https://www.pinterest.com/simuphish/" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/pinterest_11378604.png" alt=""></a>
+                        <a href="https://www.youtube.com/@simUphishofficial" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/youtube_4494485.png" alt=""></a>
+                        <a href="https://x.com/simuphish" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/twitter_5969020.png" alt=""></a>
+                        <a href="https://www.linkedin.com/company/sim-u-phish/" target="_blank" style="color: white; font-size: 1.2rem;"> <img width="34px" height="34px" src="/social_16033412.png" alt=""></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(100,100,255,0.1); text-align: center; color: rgba(255,255,255,0.5); font-size: 0.8rem;">
+                <p>© 2025 simUphish. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- Add similar modals for SLA, DPA, and other documents -->
+
+    <script>
+        // FAQ functionality
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                question.classList.toggle('active');
+                answer.classList.toggle('show');
+            });
+        });
+
+        // Document modal functionality
+        document.querySelectorAll('.document-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const modalId = card.getAttribute('data-modal') + 'Modal';
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+        });
+
+        // Close modals
+        document.querySelectorAll('.modal-close, .modal-overlay').forEach(element => {
+            element.addEventListener('click', function(e) {
+                if (e.target === this || e.target.classList.contains('modal-close')) {
+                    document.querySelectorAll('.modal-overlay').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>
+
+<script>document.addEventListener('DOMContentLoaded', function() {
+        
+    const menuBtn = document.createElement('button');
+    menuBtn.className = 'mobile-menu-btn';
+    menuBtn.innerHTML = '☰';
+    menuBtn.onclick = function() {
+        document.querySelector('.nav-items').classList.toggle('active');
+    };
+    
+    const navbar = document.querySelector('.navbar');
+    const navItems = document.createElement('div');
+    navItems.className = 'nav-items';
+    
+    // Move existing nav items into the new container
+    const existingItems = document.querySelectorAll('.nav-item');
+    existingItems.forEach(item => {
+        navItems.appendChild(item);
+    });
+    
+    navbar.appendChild(menuBtn);
+    navbar.appendChild(navItems);
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!navbar.contains(e.target) && !e.target.classList.contains('mobile-menu-btn')) {
+            navItems.classList.remove('active');
+        }
+    });
+});
+
+
+</script>
+</body>
+</html>
