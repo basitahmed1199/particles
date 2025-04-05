@@ -357,12 +357,12 @@ class SpineExperience {
      // Adjust settings for mobile
      if (this.isMobile) {
       // Reduce particle counts for mobile
-      particlesjsConfig1.particles.number.value = 80;
-      particlesjsConfig2.particles.number.value = 80;
-      particlesjsConfig3.particles.number.value = 80;
+      particlesjsConfig1.particles.number.value = 50;
+      particlesjsConfig2.particles.number.value = 50;
+      particlesjsConfig3.particles.number.value = 50;
       
       // Smaller frame sizes for mobile
-      this.mobileFrameScale = 0.6;
+      this.mobileFrameScale = 0.7;
     } else {
       this.mobileFrameScale = 1;
     }
@@ -508,18 +508,19 @@ init() {
   this.scene = new THREE.Scene();
   this.scene.background = new THREE.Color(0x15202a);
    // Adjust camera FOV for mobile
-   const fov = this.isMobile ? 45 : 35;
+   const fov = this.isMobile ? 40 : 35;
    this.camera = new THREE.PerspectiveCamera(fov, this.width / this.height, 0.1, 1000);
    
    // Position camera further back on mobile for better view
    this.camera.position.z = this.isMobile ? 15 : 12;
    
    // Create renderer with mobile-optimized settings
-   this.renderer = new THREE.WebGLRenderer({ 
-     antialias: !this.isMobile, // Disable antialiasing on mobile for performance
-     alpha: true,
-     powerPreference: this.isMobile ? "low-power" : "high-performance"
-   });
+  // In your SpineExperience constructor:
+this.renderer = new THREE.WebGLRenderer({ 
+  antialias: !this.isMobile,
+  powerPreference: "high-performance",
+  precision: this.isMobile ? "lowp" : "highp"
+});
   
   // Create camera
   this.camera = new THREE.PerspectiveCamera(35, this.width / this.height, 0.1, 1000);
@@ -911,6 +912,7 @@ createCircularPath() {
         pathPosition: t,
         initialPosition: point.clone(),
         depthPosition: closestPoint.depthPosition,
+        isInteractive: true,  // <-- Add this flag
         fixedAngle: skewAngle, // Store the fixed angle
         isAtCenter: false, // NEW: Track if frame is at center
         text: this.frameSampleTexts[i % this.frameSampleTexts.length] // NEW: Store the text
@@ -1053,15 +1055,21 @@ updateParticles() {
       const currentScale = frame.scale.x;
       const targetScale = frame.userData.targetScale || 1.0;
       
-      // Smooth interpolation with a slower transition
-      const newScale = currentScale + (targetScale - currentScale) * 0.2;
+      // Only animate if there's a difference
+      if (Math.abs(targetScale - currentScale) > 0.001) {
+        // Smooth interpolation with damping
+        const newScale = THREE.MathUtils.lerp(currentScale, targetScale, 0.2);
+        frame.scale.set(newScale, newScale, newScale);
+      }
       
-      // Apply the new scale
-      frame.scale.set(newScale, newScale, newScale);
-      
-      // Optional: Add a small threshold to prevent continuous tiny updates
-      if (Math.abs(targetScale - newScale) < 0.001) {
-        frame.scale.set(targetScale, targetScale, targetScale);
+      // Visibility logic
+      const isBehindSpine = frame.position.z > 3;
+      if (isBehindSpine) {
+        frame.renderOrder = -1;
+        frame.material.opacity = 0.4;
+      } else {
+        frame.renderOrder = 1;
+        frame.material.opacity = 0.5;
       }
     });
     
@@ -1093,15 +1101,7 @@ updateParticles() {
       // 4. Force render update
       textMesh.material.needsUpdate = true;
       textMesh.visible = textMesh.material.opacity > 0.01;
-      
-      // 5. Debug logging
-      if (textMesh.userData.index === 0) {
-        console.log(`Frame ${textMesh.userData.index} | 
-          Z: ${correspondingFrame.position.z.toFixed(2)} | 
-          Behind: ${isBehindSpine} | 
-          Opacity: ${textMesh.material.opacity.toFixed(2)} |
-          Visible: ${textMesh.visible}`);
-      }
+     
     }
   });
      // Update debug trackers
@@ -1138,7 +1138,7 @@ updateParticles() {
         scrollTrigger: {
           trigger: ".content",
           start: "top top",
-          end: "bottom bottom",
+          end: "+=500%",
           scrub: 1, // Increased scrub value for slower, smoother scrolling
           onUpdate: (self) => {
             // Update scroll progress
@@ -1336,126 +1336,58 @@ updateFramesOnScroll(progress) {
 }
 
 setupHoverEffects() {
-  // Handle both mouse and touch events
-  const handlePointerMove = (event) => {
-    // Get coordinates from either mouse or touch event
-    const clientX = event.clientX || (event.touches && event.touches[0].clientX);
-    const clientY = event.clientY || (event.touches && event.touches[0].clientY);
-    
-    if (clientX === undefined || clientY === undefined) return;
-    
-    // Calculate normalized position (-1 to 1)
-    this.cursor.x = (clientX / this.width) * 2 - 1;
-    this.cursor.y = -(clientY / this.height) * 2 + 1;
-    
-    // Apply subtle camera movement based on cursor
-    if (this.camera) {
-      // Reduce movement sensitivity on mobile
-      const sensitivity = this.isMobile ? 0.3 : 0.5;
-      this.camera.position.x += (this.cursor.x * sensitivity - this.camera.position.x) * 0.05;
-      this.camera.position.y += (this.cursor.y * sensitivity - this.camera.position.y) * 0.05;
-      this.camera.lookAt(new THREE.Vector3(0, 0, 3));
-    }
-  };
-  
-  // Add both mouse and touch events
-  window.addEventListener('mousemove', handlePointerMove);
-  window.addEventListener('touchmove', handlePointerMove);
-  
   // Setup raycaster for frame interaction
   this.raycaster = new THREE.Raycaster();
   this.mouse = new THREE.Vector2();
   
   // Unified pointer move handler for hover effects
   const handlePointerHover = (event) => {
-    // Get coordinates from either mouse or touch event
+    // Get coordinates
+    const rect = this.renderer.domElement.getBoundingClientRect();
     const clientX = event.clientX || (event.touches && event.touches[0].clientX);
     const clientY = event.clientY || (event.touches && event.touches[0].clientY);
     
     if (clientX === undefined || clientY === undefined) return;
     
-    // Calculate mouse position in normalized device coordinates
-    this.mouse.x = (clientX / this.width) * 2 - 1;
-    this.mouse.y = -(clientY / this.height) * 2 + 1;
-    
-    // Update the raycaster
+    this.mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+    // Update raycaster
     this.raycaster.setFromCamera(this.mouse, this.camera);
     
-    // Check for intersections with video frames
+    // Get intersections with ALL frames (remove the filter)
     const intersects = this.raycaster.intersectObjects(this.videoFrames);
-    
-    // Reset all frames
+
+    // Reset all frames first
     this.videoFrames.forEach(frame => {
-      if (frame !== this.activeFrame) {
-        // Small scale for non-hovered frames
-        if (!frame.userData.isAtCenter) {
-          frame.userData.targetScale = 1.0 * this.mobileFrameScale;
-        }
+      if (!frame.userData.isAtCenter) { // Don't reset frames at center
+        frame.userData.targetScale = 1.0;
       }
     });
-    
-    // If we intersect with a frame
+
+    // Handle hover
     if (intersects.length > 0) {
       const hoveredFrame = intersects[0].object;
-      this.activeFrame = hoveredFrame;
-      
-      // Slightly larger scale on hover
-      hoveredFrame.userData.targetScale = 1.15 * this.mobileFrameScale;
-      
-      // Add cursor change (only for non-touch devices)
-      if (!this.isMobile) {
-        document.body.style.cursor = 'pointer';
-      }
+      hoveredFrame.userData.targetScale = 1.1; // Increase scale more
+      this.renderer.domElement.style.cursor = 'pointer';
     } else {
-      this.activeFrame = null;
-      if (!this.isMobile) {
-        document.body.style.cursor = 'auto';
-      }
+      this.renderer.domElement.style.cursor = '';
     }
   };
-  
-  // Add event listeners
+
+  // Add event listeners - use the same handler for both
   this.renderer.domElement.addEventListener('mousemove', handlePointerHover);
   this.renderer.domElement.addEventListener('touchmove', handlePointerHover);
   
-  // Unified click/tap handler
-  const handlePointerClick = (event) => {
-    // Prevent default on touch to avoid mouse event emulation
-    if (event.type === 'touchstart') {
-      event.preventDefault();
-    }
-    
-    // Get coordinates
-    const clientX = event.clientX || (event.touches && event.touches[0].clientX);
-    const clientY = event.clientY || (event.touches && event.touches[0].clientY);
-    
-    if (clientX === undefined || clientY === undefined) return;
-    
-    // Update the mouse position
-    this.mouse.x = (clientX / this.width) * 2 - 1;
-    this.mouse.y = -(clientY / this.height) * 2 + 1;
-    
-    // Update the raycaster
-    this.raycaster.setFromCamera(this.mouse, this.camera);
-    
-    // Check for intersections with video frames
-    const intersects = this.raycaster.intersectObjects(this.videoFrames);
-    
-    // If we click on a frame
-    if (intersects.length > 0) {
-      const clickedFrame = intersects[0].object;
-      console.log(`Clicked on frame ${clickedFrame.userData.index} - ${clickedFrame.userData.text}`);
-      
-      // Trigger action when clicking a frame
-      if (typeof this.onFrameClicked === 'function') {
-        this.onFrameClicked(clickedFrame.userData.index, clickedFrame.userData.text);
+  // Reset on leave
+  this.renderer.domElement.addEventListener('mouseleave', () => {
+    this.videoFrames.forEach(frame => {
+      if (!frame.userData.isAtCenter) {
+        frame.userData.targetScale = 1.0;
       }
-    }
-  };
-  
-  // Add both click and touch events
-  this.renderer.domElement.addEventListener('click', handlePointerClick);
-  this.renderer.domElement.addEventListener('touchstart', handlePointerClick);
+    });
+    this.renderer.domElement.style.cursor = '';
+  });
 }
 
 setupEvents() {
